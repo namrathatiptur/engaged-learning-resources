@@ -102,9 +102,10 @@
     }
     .home-lead {
         font-size: clamp(1rem, 1.6vw, 1.12rem); line-height: 1.6;
-        color: rgba(255, 255, 255, 0.82); margin: 0 auto 1.75rem; max-width: 620px;
+        color: rgba(255, 255, 255, 0.82); margin: 0 auto 1.75rem; max-width: 720px;
         opacity: 0; animation: home-fade-up 0.65s var(--ease-out) 0.14s forwards;
     }
+    .home-lead:has(+ .home-lead) { margin-bottom: 1rem; }
     .home-lead strong { color: #fff; font-weight: 600; }
     .home-hero-actions {
         display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; justify-content: center;
@@ -236,9 +237,12 @@
     <section class="home-hero" aria-labelledby="home-heading">
         <div class="home-hero-inner">
             <div class="home-hero-copy">
-                <h1 id="home-heading">Teaching activities <span class="grad">for faculty</span></h1>
+                <h1 id="home-heading">Engaged Teaching Activities <span class="grad">for Instructors</span></h1>
                 <p class="home-lead">
-                    <strong>TeachOrange</strong> is a free library for higher-ed faculty: peer-shared teaching activities with descriptions, tags, and downloadable handouts and files, so you can <strong>browse and search without signing in</strong>. Sign in with your <strong>.edu</strong> email when you want to preview files or download materials.
+                    <strong>TeachOrange</strong> is a free library of engaged learning resources for course instructors to easily incorporate into their classrooms. Each of the resources are designed to work in almost any subject in many different classroom contexts. By focusing on the activity, and letting the instructor adapt the activity to the subject or topic, TeachOrange resources encourage creativity and imagination in course instructors.
+                </p>
+                <p class="home-lead">
+                    Our teaching activities have descriptions, tags, and downloadable handouts and files, so you can <strong>browse and search without signing in</strong>. Sign in with your <strong>.edu</strong> email when you want to preview files or download materials. Each activity has a guide for implementing the activity along with possible additional assignments and implementation examples. The individual activities are designed to be easy to use. Once you download the activity, it should take no more than 15-30 minutes to adapt it to your class. The first few may take a bit longer, but you will quickly get the hang of it.
                 </p>
                 <div class="home-hero-actions">
                     <a href="{% url 'activities:list' %}" class="btn">

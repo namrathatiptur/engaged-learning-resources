@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}TeachOrange Consulting{% endblock %}
+{% block title %}TeachOrange Consultations{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -26,7 +26,7 @@
         mask-image: radial-gradient(120% 90% at 20% 10%, #000 0%, transparent 70%);
         -webkit-mask-image: radial-gradient(120% 90% at 20% 10%, #000 0%, transparent 70%);
     }
-    .consult-hero-inner { position: relative; z-index: 1; max-width: 640px; }
+    .consult-hero-inner { position: relative; z-index: 1; max-width: 760px; }
     .consult-eyebrow {
         display: inline-block; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
         letter-spacing: 0.18em; text-transform: uppercase; color: #ffd9b0;
@@ -37,26 +37,22 @@
         font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.8rem);
         font-weight: 700; line-height: 1.1; letter-spacing: -0.025em; margin: 0 0 1rem;
     }
-    .consult-hero p { font-size: 1.08rem; line-height: 1.6; color: rgba(255, 255, 255, 0.82); margin: 0 0 1.5rem; }
-    .placeholder-note {
-        display: flex; align-items: flex-start; gap: 0.6rem;
-        margin: 0 0 2rem; padding: 0.85rem 1.1rem;
-        background: rgba(247, 105, 0, 0.08); border: 1px dashed rgba(247, 105, 0, 0.4);
-        border-radius: 10px; font-size: 0.92rem; color: var(--su-navy);
-    }
-    .placeholder-note svg { width: 1.15rem; height: 1.15rem; flex-shrink: 0; color: var(--su-orange-dark); margin-top: 0.1rem; }
-    .consult-grid { display: grid; gap: 1.25rem; margin-bottom: 2.5rem; }
-    @media (min-width: 720px) { .consult-grid { grid-template-columns: repeat(3, 1fr); } }
+    .consult-hero p { font-size: 1.05rem; line-height: 1.7; color: rgba(255, 255, 255, 0.85); margin: 0 0 1.1rem; }
+    .consult-hero p:last-of-type { margin-bottom: 1.6rem; }
+    .consult-sections { display: grid; gap: 1.25rem; margin-bottom: 2.5rem; }
     .consult-card {
         background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
         border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px; padding: 1.5rem 1.4rem; box-shadow: var(--shadow-card);
+        border-radius: 16px; padding: clamp(1.4rem, 3vw, 2rem); box-shadow: var(--shadow-card);
+        display: grid; gap: 1rem;
     }
-    .consult-card h3 { font-family: var(--font-display); font-size: 1.08rem; color: var(--su-navy); margin: 0 0 0.5rem; font-weight: 600; }
-    .consult-card p { margin: 0; font-size: 0.94rem; color: #55677a; line-height: 1.55; }
+    @media (min-width: 720px) { .consult-card { grid-template-columns: auto 1fr; gap: 1.4rem; } }
+    .consult-card h2 { font-family: var(--font-display); font-size: 1.3rem; color: var(--su-navy); margin: 0 0 0.6rem; font-weight: 700; letter-spacing: -0.01em; }
+    .consult-card p { margin: 0 0 0.85rem; font-size: 0.98rem; color: #46586b; line-height: 1.7; max-width: 75ch; }
+    .consult-card p:last-child { margin-bottom: 0; }
     .consult-card .consult-icon {
-        width: 2.85rem; height: 2.85rem; border-radius: 12px; margin-bottom: 0.9rem;
+        width: 2.85rem; height: 2.85rem; border-radius: 12px;
         display: flex; align-items: center; justify-content: center;
         background: linear-gradient(145deg, rgba(255, 140, 0, 0.22), rgba(247, 105, 0, 0.1));
         border: 1px solid rgba(247, 105, 0, 0.3); color: var(--su-orange-dark);
@@ -74,41 +70,44 @@
 
 {% block content %}
 <div class="consult">
-    <section class="consult-hero">
+    <section class="consult-hero" aria-labelledby="consult-heading">
         <div class="consult-hero-inner">
-            <span class="consult-eyebrow">TeachOrange Consulting</span>
-            <h1>Consulting for teaching &amp; engagement</h1>
-            <p>Placeholder overview — a short paragraph describing what TeachOrange Consulting offers to faculty, departments, and institutions.</p>
-            <a href="{% url 'contact' %}" class="btn">Get in touch</a>
+            <span class="consult-eyebrow">Consultations</span>
+            <h1 id="consult-heading">TeachOrange Consultations</h1>
+            <p>The TeachOrange team offers consultations on active and engaged learning strategies, syllabus design and redesign, curricular integration of engaged learning strategies, internship integration and structuring, and undergraduate outreach strategies at the college level. We work on the philosophy that student outcomes are linked to instructors, departments, and schools employing purposeful and effective curricular strategies that develop knowledge, build skills, and foster connections between students, instructors, and schools. Education, job-readiness, and character are built intentionally. It is our goal to provide you with the plans and strategies to build your own effective structure.</p>
+            <p>We also know that no issue or idea is too small to have a transformative impact on a student. That one amazing lecture, a small experience in a class, a conversation with a professor during office hours; these are the building blocks of a transformative educational experience. Our consultations can happen at any level and are most effective when strategies and goals permeate the entire curricular structure.</p>
+            <a href="{% url 'contact' %}" class="btn">Request a consultation</a>
         </div>
     </section>
 
-    <div class="placeholder-note" role="note">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        <span><strong>Placeholder content.</strong> This page is scaffolded and ready — swap in the real Consulting copy, services, and details when you send them.</span>
-    </div>
-
-    <div class="consult-grid">
-        <article class="consult-card">
+    <div class="consult-sections">
+        <section class="consult-card" aria-labelledby="consult-instructors">
             <div class="consult-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></div>
-            <h3>Service one</h3>
-            <p>Placeholder description of a consulting service — what it is and who it's for.</p>
-        </article>
-        <article class="consult-card">
+            <div>
+                <h2 id="consult-instructors">For Instructors</h2>
+                <p>Transformative educational experiences are grounded in the classroom. It is where instructors plant the seeds that will bear fruit outside the classroom and beyond the student’s college experience. What happens in the classroom should never stay in the classroom and what happens outside the classroom should be a direct outcome of what happens in the classroom. We offer consultations on syllabus design for new courses, redesign for existing courses, assignment and activity review, and course design for internship experiences. In addition, we also work with instructors to enhance their own experience in the classroom and better utilize their own time to have maximum impact. If the instructor is not enjoying teaching, how can the students possibly enjoy learning. Our strategies help instructors foster, grow, or reignite their own love of teaching and connections with students.</p>
+            </div>
+        </section>
+        <section class="consult-card" aria-labelledby="consult-departments">
             <div class="consult-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></div>
-            <h3>Service two</h3>
-            <p>Placeholder description of a consulting service — what it is and who it's for.</p>
-        </article>
-        <article class="consult-card">
-            <div class="consult-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></div>
-            <h3>Service three</h3>
-            <p>Placeholder description of a consulting service — what it is and who it's for.</p>
-        </article>
+            <div>
+                <h2 id="consult-departments">For Departments</h2>
+                <p>The path students take to a particular major or course of study begins before they step foot on campus and extends well beyond their time in college. Engaged learning strategies in courses help encode material in a student’s knowledge and skill base, which allows them to more effectively use that base in and out of the classroom. But the benefits of engaged learning strategies compound when they are integrated into a logical and impactful course of study. In other words, a designed curriculum. The degree curriculum is one of the most powerful tools we have to enhance student outcomes, increase recruitment and retention, and reconnect students to their educational experience after they graduate. If your department is looking to refocus its curriculum on student knowledge growth, skill acquisition, and overall satisfaction, we can work with you to adapt existing courses, plan new courses, and analyze degree requirements.</p>
+            </div>
+        </section>
+        <section class="consult-card" aria-labelledby="consult-schools">
+            <div class="consult-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg></div>
+            <div>
+                <h2 id="consult-schools">For Schools and Colleges</h2>
+                <p>Large institutional units often lose sight of the micro foundations of the student experience that lead to desired outcomes like recruitment, retention, and reengagement. Seeing students only as customers, or as experts in their own educational experience, can lead to a de-prioritization of the curriculum and instruction as the core of the educational experience. This can be damaging as students extract value from their college experience primarily in the classroom. When looking back and asking themselves, “was this worth it?” students are thinking about their classroom experience.</p>
+                <p>Our framework and strategies turn these detrimental patterns on their head by placing the student-teacher relationship that begins in the classroom at the core. Schools and colleges can accomplish this by designing a curriculum that builds toward transformative experiences in amazing classes, impactful internships, and connected relationships. By reestablishing their leadership over the educational experience through the implementation of designed curricula, colleges and universities can increase student engagement and reengagement, decrease administrative burdens, and foster productive campus environments. Let the curriculum do the work for you.</p>
+            </div>
+        </section>
     </div>
 
     <section class="consult-cta">
-        <h2>Interested in working together?</h2>
-        <p>Placeholder call to action — tell visitors how to start a conversation.</p>
+        <h2>Interested in a consultation?</h2>
+        <p>Reach out to the TeachOrange team to start a conversation.</p>
         <a href="{% url 'contact' %}" class="btn">Contact us</a>
     </section>
 </div>

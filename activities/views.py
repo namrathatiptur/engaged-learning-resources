@@ -242,7 +242,7 @@ def team(request):
 
 @require_GET
 def consulting(request):
-    """TeachOrange Consulting page."""
+    """TeachOrange Consultations page."""
     return render(request, "consulting.html")
 
 

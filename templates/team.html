@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Meet the team{% endblock %}
 
@@ -7,15 +8,8 @@
     body { background: #eef2f7; }
     .team-page { max-width: 1000px; margin: 0 auto; }
     .team-intro { margin: 0 0 1.5rem; color: #46586b; line-height: 1.7; font-size: 1.05rem; max-width: 70ch; }
-    .placeholder-note {
-        display: flex; align-items: flex-start; gap: 0.6rem;
-        margin: 0 0 2rem; padding: 0.85rem 1.1rem;
-        background: rgba(247, 105, 0, 0.08); border: 1px dashed rgba(247, 105, 0, 0.4);
-        border-radius: 10px; font-size: 0.92rem; color: var(--su-navy);
-    }
-    .placeholder-note svg { width: 1.15rem; height: 1.15rem; flex-shrink: 0; color: var(--su-orange-dark); margin-top: 0.1rem; }
     .team-grid { display: grid; gap: 1.5rem; }
-    @media (min-width: 720px) { .team-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 720px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
     .member-card {
         background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
@@ -28,13 +22,14 @@
     .member-card:hover { transform: translateY(-3px); box-shadow: 0 22px 50px -22px rgba(13, 45, 76, 0.5); }
     @media (prefers-reduced-motion: reduce) { .member-card:hover { transform: none; } }
     .member-avatar {
-        width: 104px; height: 104px; border-radius: 50%;
+        width: 132px; height: 132px; border-radius: 50%;
         display: flex; align-items: center; justify-content: center;
         font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: #fff;
         border: 3px solid rgba(255, 255, 255, 0.75);
         box-shadow: 0 10px 26px -10px rgba(13, 45, 76, 0.55);
-        margin-bottom: 1rem;
+        margin-bottom: 1rem; overflow: hidden;
     }
+    .member-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; background: #fff; }
     .member-avatar--orange { background: linear-gradient(145deg, #FF9E2C 0%, var(--su-orange) 55%, var(--su-orange-dark) 100%); }
     .member-avatar--sky { background: linear-gradient(145deg, #6fc4f2 0%, var(--brand-teach-mid) 55%, var(--brand-teach-deep) 100%); }
     .member-avatar--navy { background: linear-gradient(145deg, #1c4b78 0%, var(--su-navy) 60%, var(--su-navy-900) 100%); }
@@ -43,43 +38,27 @@
         color: var(--su-navy); margin: 0 0 0.25rem; letter-spacing: -0.01em;
     }
     .member-role { margin: 0 0 0.85rem; font-size: 0.85rem; font-weight: 600; color: var(--su-orange-dark); }
-    .member-bio { margin: 0; font-size: 0.93rem; color: #55677a; line-height: 1.6; }
-    .member-photo-hint {
-        margin-top: 0.9rem; font-size: 0.75rem; color: #8493a3; font-style: italic;
-    }
+    .member-bio { margin: 0; font-size: 0.95rem; color: #55677a; line-height: 1.65; text-align: left; }
+    .member-bio a { color: var(--su-orange-dark); font-weight: 600; }
 </style>
 {% endblock %}
 
 {% block content %}
 <h1 class="page-title">Meet the team</h1>
-<p class="team-intro">The people behind <span class="brand-teach">Teach</span><span class="brand-orange">Orange</span> — bringing peer-shared teaching activities to higher-ed faculty.</p>
-
-<div class="placeholder-note" role="note">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-    <span><strong>Headshots and short bios coming soon.</strong> Names and roles are set — drop photos into <code>static/team/</code> (or upload them) and send bios to fill these in.</span>
-</div>
+<p class="team-intro">The people behind <span class="brand-teach">Teach</span><span class="brand-orange">Orange</span>, bringing engaged teaching activities to course instructors.</p>
 
 <div class="team-grid">
     <article class="member-card">
-        <div class="member-avatar member-avatar--orange" aria-hidden="true">MB</div>
-        <h2>Mark D. Brockway</h2>
-        <p class="member-role">Faculty lead</p>
-        <p class="member-bio">Assistant Teaching Professor, Political Science · Maxwell School of Citizenship and Public Affairs, Syracuse University. Short bio coming soon.</p>
-        <p class="member-photo-hint">Headshot coming soon</p>
+        <div class="member-avatar member-avatar--orange"><img src="{% static 'team/mark-brockway.jpg' %}" alt="Mark Brockway"></div>
+        <h2>Mark Brockway</h2>
+        <p class="member-role">Assistant Teaching Professor, Political Science</p>
+        <p class="member-bio">Mark Brockway is an Assistant Teaching Professor in Political Science at Syracuse University. He has developed many effective strategies for increasing student engagement and learning in and out of the classroom. He is especially interested in expanding opportunities for civic engagement, giving every student the chance to do an internship, and structuring curricula and degree programs to better serve student goals. He also studies religion in American politics. You can read more on his personal website <a href="https://markbrockway.com" target="_blank" rel="noopener">markbrockway.com</a></p>
     </article>
     <article class="member-card">
-        <div class="member-avatar member-avatar--sky" aria-hidden="true">BK</div>
-        <h2>Benjamin Katz</h2>
-        <p class="member-role">Teaching resources</p>
-        <p class="member-bio">Gathered and curated the teaching activities for TeachOrange · Syracuse University. Short bio coming soon.</p>
-        <p class="member-photo-hint">Headshot coming soon</p>
-    </article>
-    <article class="member-card">
-        <div class="member-avatar member-avatar--navy" aria-hidden="true">NT</div>
+        <div class="member-avatar member-avatar--navy"><img src="{% static 'team/namratha-tiptur-manjunath.jpg' %}" alt="Namratha Tiptur Manjunath"></div>
         <h2>Namratha Tiptur Manjunath</h2>
         <p class="member-role">Website &amp; platform development</p>
-        <p class="member-bio">Built and maintains the TeachOrange website and platform · Syracuse University. Short bio coming soon.</p>
-        <p class="member-photo-hint">Headshot coming soon</p>
+        <p class="member-bio">Namratha Tiptur Manjunath designed and built the TeachOrange website and platform. A data engineer and machine learning enthusiast pursuing a Master's at Syracuse University, Namratha works with healthcare data, builds ETL pipelines, and designs machine learning models. Before graduate school, Namratha spent a year as a data engineer at Carelon Global Solutions in Bangalore, and most recently interned as a Data and Research Intern at the Centre for Public Impact, building data pipelines and dashboards that help government and philanthropic partners make sense of survey data.</p>
     </article>
 </div>
 {% endblock %}
