@@ -227,3 +227,71 @@ class CategoryListTests(TestCase):
         data = json.loads(resp.content)
         self.assertEqual(len(data["categories"]), 1)
         self.assertEqual(data["categories"][0]["name"], "Icebreakers")
+
+
+class ContactFormTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.valid = {
+            "request_type": "consultation",
+            "name": "Ada Lovelace",
+            "email": "ada@university.edu",
+            "institution": "Syracuse University",
+            "subject": "Syllabus redesign",
+            "message": "We would like help redesigning a syllabus.",
+        }
+
+    def test_type_query_param_preselects_request_type(self):
+        resp = self.client.get("/contact/?type=consultation")
+        self.assertContains(resp, '<option value="consultation" selected>')
+
+    def test_unknown_type_query_param_is_ignored(self):
+        resp = self.client.get("/contact/?type=bogus")
+        self.assertIsNone(resp.context["form"].initial.get("request_type"))
+        self.assertContains(resp, '<option value="" selected>')
+
+    def test_request_type_is_required(self):
+        data = dict(self.valid, request_type="")
+        resp = self.client.post("/contact/", data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertFormError(resp.context["form"], "request_type", "This field is required.")
+
+    def test_subject_is_required(self):
+        data = dict(self.valid, subject="")
+        resp = self.client.post("/contact/", data)
+        self.assertEqual(resp.status_code, 200)
+        self.assertFormError(resp.context["form"], "subject", "This field is required.")
+
+    def test_valid_submission_emails_with_request_type(self):
+        from django.core import mail
+        resp = self.client.post("/contact/", self.valid)
+        self.assertRedirects(resp, "/contact/")
+        self.assertEqual(len(mail.outbox), 1)
+        sent = mail.outbox[0]
+        self.assertEqual(sent.subject, "[TeachOrange · Consultation request] Syllabus redesign")
+        self.assertIn("Request type: Consultation request", sent.body)
+        self.assertIn("Institution: Syracuse University", sent.body)
+        self.assertEqual(sent.reply_to, ["ada@university.edu"])
+
+    def test_honeypot_submission_is_not_emailed(self):
+        from django.core import mail
+        resp = self.client.post("/contact/", dict(self.valid, website="spam"))
+        self.assertRedirects(resp, "/contact/")
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_signed_in_user_fields_prefilled_from_profile(self):
+        user = User.objects.create_user("grace@syr.edu", "grace@syr.edu", "pw-12345678", first_name="Grace", last_name="Hopper")
+        self.client.force_login(user)
+        resp = self.client.get("/contact/")
+        form = resp.context["form"]
+        self.assertEqual(form.initial["email"], "grace@syr.edu")
+        self.assertEqual(form.initial["name"], "Grace Hopper")
+        self.assertContains(resp, "readonly")
+
+    def test_signed_in_user_cannot_change_email(self):
+        from django.core import mail
+        user = User.objects.create_user("grace@syr.edu", "grace@syr.edu", "pw-12345678")
+        self.client.force_login(user)
+        resp = self.client.post("/contact/", dict(self.valid, email="someone@else.com"))
+        self.assertRedirects(resp, "/contact/")
+        self.assertEqual(mail.outbox[0].reply_to, ["grace@syr.edu"])

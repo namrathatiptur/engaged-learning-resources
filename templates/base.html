@@ -391,6 +391,13 @@
         .footer-bottom p { margin: 0; }
         .footer-bottom a { color: var(--su-orange-light); text-decoration: none; }
         .footer-bottom a:hover { text-decoration: underline; }
+        /* Compact footer: links flow in rows so the footer stays a short band */
+        .footer { padding: 1.75rem 2rem 1.1rem; }
+        .footer-inner { grid-template-columns: 1.3fr 1.5fr 1fr 1fr; gap: 1.5rem 2rem; align-items: start; }
+        .footer-tagline { margin-top: 0.45rem; font-size: 0.85rem; }
+        .footer-col { flex-direction: row; flex-wrap: wrap; gap: 0.35rem 1.1rem; }
+        .footer-col h3 { flex-basis: 100%; margin: 0 0 0.3rem; }
+        .footer-bottom { margin-top: 1.25rem; padding-top: 0.9rem; }
         @media (max-width: 760px) { .footer-inner { grid-template-columns: 1fr 1fr; gap: 1.75rem; } }
         @media (max-width: 440px) { .footer-inner { grid-template-columns: 1fr; } .footer-bottom { justify-content: flex-start; } }
 
@@ -652,7 +659,7 @@
         <div class="footer-inner">
             <div class="footer-brand">
                 <a href="{% url 'home' %}" class="footer-brand-logo"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span><span class="logo-emoji" aria-hidden="true">🍊</span></a>
-                <p class="footer-tagline">Teaching resources for faculty — peer-shared teaching activities you can browse, preview, and download with your <strong>.edu</strong> email.</p>
+                <p class="footer-tagline">Teaching resources for instructors</p>
             </div>
             <nav class="footer-col" aria-label="Explore">
                 <h3>Explore</h3>
@@ -678,7 +685,7 @@
             </nav>
             <div class="footer-col">
                 <h3>Get in touch</h3>
-                <a href="mailto:mdbrockw@syr.edu">mdbrockw@syr.edu</a>
+                <a href="{% url 'contact' %}">Contact us</a>
                 <a href="https://teachorange.com/" target="_blank" rel="noopener noreferrer">teachorange.com</a>
             </div>
         </div>
@@ -768,6 +775,16 @@
                     btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
                 });
             });
+        })();
+        // Expose the sticky header height so full-screen sections can subtract it.
+        (function() {
+            var header = document.querySelector('.header');
+            if (!header) return;
+            function setHeaderHeight() {
+                document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+            }
+            setHeaderHeight();
+            window.addEventListener('resize', setHeaderHeight);
         })();
     </script>
     {% block extra_js %}{% endblock %}

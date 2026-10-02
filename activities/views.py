@@ -194,23 +194,31 @@ def home(request):
 @require_http_methods(["GET", "POST"])
 def contact(request):
     """Contact page with a message form that emails CONTACT_EMAIL."""
+    user = request.user if request.user.is_authenticated else None
     if request.method == "POST":
-        form = ContactForm(request.POST)
+        data = request.POST.copy()
+        if user and user.email:
+            # Signed-in users always send from their verified account email.
+            data["email"] = user.email
+        form = ContactForm(data)
         if form.is_valid():
             if form.is_spam():
                 # Silently accept honeypot hits without sending.
                 messages.success(request, "Thanks — your message has been sent.")
                 return redirect("contact")
             data = form.cleaned_data
-            subject = data.get("subject") or f"Contact from {data['name']}"
+            request_type = form.request_type_label()
+            subject = data["subject"]
             body = (
+                f"Request type: {request_type}\n"
                 f"Name: {data['name']}\n"
-                f"Email: {data['email']}\n\n"
+                f"Email: {data['email']}\n"
+                f"Institution: {data.get('institution') or '-'}\n\n"
                 f"{data['message']}"
             )
             recipient = getattr(settings, "CONTACT_EMAIL", settings.DEFAULT_FROM_EMAIL)
             email = EmailMessage(
-                subject=f"[TeachOrange] {subject}",
+                subject=f"[TeachOrange · {request_type}] {subject}",
                 body=body,
                 from_email=settings.DEFAULT_FROM_EMAIL,
                 to=[recipient],
@@ -222,7 +230,7 @@ def contact(request):
                 messages.error(
                     request,
                     "Sorry — we couldn't send your message right now. "
-                    "Please email us directly at " + recipient + ".",
+                    "Please try again in a few minutes.",
                 )
             else:
                 messages.success(
@@ -230,8 +238,19 @@ def contact(request):
                 )
                 return redirect("contact")
     else:
-        form = ContactForm()
-    return render(request, "contact.html", {"form": form})
+        # Links like /contact/?type=consultation pre-select the request type.
+        initial = {}
+        initial_type = request.GET.get("type", "")
+        if initial_type in dict(ContactForm.REQUEST_TYPES):
+            initial["request_type"] = initial_type
+        if user:
+            # Pre-fill from the account profile.
+            initial["email"] = user.email
+            initial["name"] = user.get_full_name()
+        form = ContactForm(initial=initial)
+    if user and user.email:
+        form.fields["email"].widget.attrs["readonly"] = True
+    return render(request, "contact.html", {"form": form, "email_from_account": bool(user and user.email)})
 
 
 @require_GET

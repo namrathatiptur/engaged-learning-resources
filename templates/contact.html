@@ -6,7 +6,7 @@
 {% block extra_css %}
 <style>
     body { background: #eef2f7; }
-    .contact-page { max-width: 1040px; margin: 0 auto; }
+    .contact-page { max-width: 1200px; margin: 0 auto; }
     .contact-intro { margin: 0 0 2rem; color: #46586b; line-height: 1.7; font-size: 1.05rem; max-width: 74ch; }
     .contact-intro a { color: var(--su-navy); font-weight: 600; }
     .contact-intro a:hover { color: var(--su-orange-dark); }
@@ -26,7 +26,8 @@
     }
 
     /* Two-column split: team left, form right */
-    .contact-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2rem; align-items: start; }
+    .contact-split { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr); gap: 2rem; align-items: start; }
+    @media (min-width: 861px) { .contact-team-col { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); } }
     @media (max-width: 860px) { .contact-split { grid-template-columns: 1fr; gap: 2.5rem; } }
 
     .panel {
@@ -86,12 +87,34 @@
     .contact-form textarea { resize: vertical; min-height: 130px; }
     .contact-form .btn { width: 100%; }
     .cf-error { color: #b00020; font-size: 0.85rem; margin: 0.35rem 0 0; }
+    .cf-req { color: var(--su-orange-dark); font-weight: 700; }
+    .cf-opt { font-weight: 500; color: #7a8a9a; font-size: 0.8rem; }
+    .cf-hint { margin: -0.15rem 0 0.4rem; font-size: 0.8rem; color: #6b7c8d; }
+    .cf-note { margin: 0.25rem 0 1rem; font-size: 0.8rem; color: #6b7c8d; }
+    .cf-hint-after { margin: 0.35rem 0 0; }
+    .contact-form input[readonly] { background: #f3f6f9; color: #46586b; cursor: not-allowed; }
+    .cf-form-error { margin: 0 0 1rem; padding: 0.6rem 0.8rem; background: #fdecee; border-radius: 8px; }
+    .contact-form select {
+        width: 100%; padding: 0.65rem 2.4rem 0.65rem 0.8rem;
+        border: 1.5px solid rgba(13, 45, 76, 0.16); border-radius: 10px;
+        font-size: 1rem; font-family: inherit; color: var(--ink); cursor: pointer;
+        appearance: none; -webkit-appearance: none;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230D2D4C' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1.1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .contact-form select:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18); }
+    .contact-form select:invalid, .contact-form select option[value=""] { color: #7a8a9a; }
+    .contact-form select option { color: var(--ink); }
+    .cf-field.has-error input, .cf-field.has-error textarea, .cf-field.has-error select { border-color: #b00020; }
+    .cf-submit { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+    .cf-submit svg { width: 1.05rem; height: 1.05rem; }
+    .cf-submit[disabled] { opacity: 0.7; cursor: progress; }
 
     .contact-footnote {
-        margin: 2.25rem 0 0; padding: 1.1rem 1.2rem;
+        margin: 1.25rem 0 0; padding: 1rem 1.15rem;
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
         border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px;
-        font-size: 0.95rem; color: #1e3a5f; line-height: 1.6;
+        font-size: 0.9rem; color: #1e3a5f; line-height: 1.6;
     }
     .contact-footnote a { color: #0d4a8c; font-weight: 600; }
 </style>
@@ -117,7 +140,7 @@
                         <h3>Mark Brockway</h3>
                         <p class="tm-role">Assistant Teaching Professor, Political Science · Maxwell School, Syracuse University</p>
                         <dl class="tm-contact">
-                            <div><dt>Email</dt><dd><a href="mailto:mdbrockw@syr.edu">mdbrockw@syr.edu</a></dd></div>
+                            <div><dt>Website</dt><dd><a href="https://markbrockway.com" target="_blank" rel="noopener">markbrockway.com</a></dd></div>
                             <div><dt>Phone</dt><dd><a href="tel:+13154432416">315.443.2416</a></dd></div>
                             <div><dt>Office</dt><dd>100 Eggers Hall, Syracuse, NY 13244</dd></div>
                         </dl>
@@ -129,6 +152,9 @@
                 </div>
                 <p class="team-more"><a href="{% url 'team' %}">Full team page &rarr;</a></p>
             </div>
+            <p class="contact-footnote">
+                <strong>Instructor accounts</strong> use a verified <strong>.edu</strong> email. If you need help with registration, password reset, or materials access, send us a message using the contact form and include your university address.
+            </p>
         </section>
 
         <!-- Right: contact form -->
@@ -136,41 +162,85 @@
             <p class="section-label">Send a message</p>
             <h2 id="contact-form-title" class="section-title">Get in touch</h2>
             <div class="panel">
-                <form method="post" action="{% url 'contact' %}" class="contact-form" novalidate>
+                <form method="post" action="{% url 'contact' %}" class="contact-form" id="contact-form" novalidate>
                     {% csrf_token %}
                     <div style="position:absolute; left:-9999px;" aria-hidden="true">
                         <label for="{{ form.website.id_for_label }}">Leave this field empty</label>
                         {{ form.website }}
                     </div>
+                    {% if form.non_field_errors %}<p class="cf-error cf-form-error" role="alert">{{ form.non_field_errors|striptags }}</p>{% endif %}
+                    <div class="cf-field{% if form.request_type.errors %} has-error{% endif %}">
+                        <label for="{{ form.request_type.id_for_label }}">Type of request <span class="cf-req" aria-hidden="true">*</span></label>
+                        <p class="cf-hint" id="request_type-hint">Helps us route your message to the right person.</p>
+                        {{ form.request_type }}
+                        {% if form.request_type.errors %}<p class="cf-error" id="request_type-error" role="alert">{{ form.request_type.errors|striptags }}</p>{% endif %}
+                    </div>
                     <div class="cf-grid">
-                        <div class="cf-field">
-                            <label for="{{ form.name.id_for_label }}">Name</label>
-                            {{ form.name }}
-                            {% if form.name.errors %}<p class="cf-error">{{ form.name.errors|striptags }}</p>{% endif %}
-                        </div>
-                        <div class="cf-field">
-                            <label for="{{ form.email.id_for_label }}">Email</label>
-                            {{ form.email }}
-                            {% if form.email.errors %}<p class="cf-error">{{ form.email.errors|striptags }}</p>{% endif %}
-                        </div>
+                    <div class="cf-field{% if form.name.errors %} has-error{% endif %}">
+                        <label for="{{ form.name.id_for_label }}">Name <span class="cf-req" aria-hidden="true">*</span></label>
+                        {{ form.name }}
+                        {% if form.name.errors %}<p class="cf-error" id="name-error" role="alert">{{ form.name.errors|striptags }}</p>{% endif %}
                     </div>
-                    <div class="cf-field">
-                        <label for="{{ form.subject.id_for_label }}">Subject</label>
+                    <div class="cf-field{% if form.email.errors %} has-error{% endif %}">
+                        <label for="{{ form.email.id_for_label }}">Email <span class="cf-req" aria-hidden="true">*</span></label>
+                        {{ form.email }}
+                        {% if email_from_account %}<p class="cf-hint cf-hint-after">From your account</p>{% endif %}
+                        {% if form.email.errors %}<p class="cf-error" id="email-error" role="alert">{{ form.email.errors|striptags }}</p>{% endif %}
+                    </div>
+                    </div>
+                    <div class="cf-grid">
+                    <div class="cf-field{% if form.institution.errors %} has-error{% endif %}">
+                        <label for="{{ form.institution.id_for_label }}">Institution <span class="cf-opt">(optional)</span></label>
+                        {{ form.institution }}
+                        {% if form.institution.errors %}<p class="cf-error" id="institution-error" role="alert">{{ form.institution.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="cf-field{% if form.subject.errors %} has-error{% endif %}">
+                        <label for="{{ form.subject.id_for_label }}">Subject <span class="cf-req" aria-hidden="true">*</span></label>
                         {{ form.subject }}
+                        {% if form.subject.errors %}<p class="cf-error" id="subject-error" role="alert">{{ form.subject.errors|striptags }}</p>{% endif %}
                     </div>
-                    <div class="cf-field">
-                        <label for="{{ form.message.id_for_label }}">Message</label>
+                    </div>
+                    <div class="cf-field{% if form.message.errors %} has-error{% endif %}">
+                        <label for="{{ form.message.id_for_label }}">Message <span class="cf-req" aria-hidden="true">*</span></label>
                         {{ form.message }}
-                        {% if form.message.errors %}<p class="cf-error">{{ form.message.errors|striptags }}</p>{% endif %}
+                        {% if form.message.errors %}<p class="cf-error" id="message-error" role="alert">{{ form.message.errors|striptags }}</p>{% endif %}
                     </div>
-                    <button type="submit" class="btn">Send message</button>
+                    <p class="cf-note"><span class="cf-req" aria-hidden="true">*</span> Required. We reply to the email you enter.</p>
+                    <button type="submit" class="btn cf-submit">
+                        <span class="cf-submit-label">Send message</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                    </button>
                 </form>
             </div>
         </section>
     </div>
 
-    <p class="contact-footnote">
-        <strong>Instructor accounts</strong> use a verified <strong>.edu</strong> email. If you need help with registration, password reset, or materials access, email <a href="mailto:mdbrockw@syr.edu">mdbrockw@syr.edu</a> and include your university address.
-    </p>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        var form = document.getElementById('contact-form');
+        if (!form) return;
+        // Tie each error message to its field for screen readers.
+        form.querySelectorAll('.cf-field.has-error').forEach(function(field) {
+            var input = field.querySelector('input, select, textarea');
+            var error = field.querySelector('.cf-error');
+            if (input && error) {
+                input.setAttribute('aria-invalid', 'true');
+                var described = input.getAttribute('aria-describedby');
+                input.setAttribute('aria-describedby', described ? described + ' ' + error.id : error.id);
+            }
+        });
+        var first = form.querySelector('[aria-invalid="true"]');
+        if (first) first.focus();
+        // Prevent double submits.
+        form.addEventListener('submit', function() {
+            var btn = form.querySelector('.cf-submit');
+            btn.disabled = true;
+            btn.querySelector('.cf-submit-label').textContent = 'Sending…';
+        });
+    })();
+</script>
 {% endblock %}
