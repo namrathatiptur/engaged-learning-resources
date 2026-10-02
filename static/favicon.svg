@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="TeachOrange">
+  <rect width="64" height="64" rx="14" fill="#000E54"/>
+  <circle cx="32" cy="36" r="16" fill="#F76900"/>
+  <circle cx="26" cy="30" r="5" fill="#FF8E00" opacity="0.65"/>
+  <path d="M33 20c2-5 7-7 11-6-1 4-4 8-9 8-2 0-2-1-2-2z" fill="#2FA84F"/>
+</svg>

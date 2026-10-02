@@ -244,5 +244,9 @@ elif EMAIL_HOST and EMAIL_HOST_USER:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-# Sign-up: require email to end with one of these suffixes (lowercased)
-ALLOWED_EMAIL_SUFFIXES = (".edu",)
+# Sign-up: require email to end with one of these suffixes (lowercased).
+# Restricted to Syracuse University for now; broaden to (".edu",) later if needed.
+ALLOWED_EMAIL_SUFFIXES = ("@syr.edu",)
+
+# Where the public contact form routes submissions (override in the host env).
+CONTACT_EMAIL = os.environ.get("DJANGO_CONTACT_EMAIL", "mdbrockw@syr.edu")

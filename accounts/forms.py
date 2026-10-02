@@ -11,10 +11,12 @@ from django.contrib.auth.models import User
 def validate_faculty_email(email: str) -> str:
     """Normalize email or raise ValidationError if the domain suffix is not allowed."""
     normalized = (email or "").strip().lower()
-    suffixes = getattr(settings, "ALLOWED_EMAIL_SUFFIXES", (".edu",))
+    suffixes = getattr(settings, "ALLOWED_EMAIL_SUFFIXES", ("@syr.edu",))
     if not normalized or not any(normalized.endswith(s) for s in suffixes):
         raise forms.ValidationError(
-            "Use a university email address ending in: " + ", ".join(suffixes)
+            "Use your Syracuse University email address (ending in "
+            + ", ".join(suffixes)
+            + ")."
         )
     return normalized
 
@@ -26,8 +28,16 @@ class SignUpForm(UserCreationForm):
 
     username = forms.EmailField(
         label="University email",
-        help_text="Use your .edu address. This will be your login.",
+        help_text="Use your Syracuse University email (netid@syr.edu). This will be your login.",
         max_length=150,
+        widget=forms.EmailInput(
+            attrs={
+                "autofocus": True,
+                "autocomplete": "username",
+                "inputmode": "email",
+                "placeholder": "netid@syr.edu",
+            }
+        ),
     )
 
     class Meta(UserCreationForm.Meta):
@@ -46,6 +56,17 @@ class SignUpForm(UserCreationForm):
 
 
 class TeachOrangeAuthenticationForm(AuthenticationForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget = forms.EmailInput(
+            attrs={
+                "autofocus": True,
+                "autocomplete": "username",
+                "inputmode": "email",
+                "placeholder": "netid@syr.edu",
+            }
+        )
+
     def clean_username(self):
         return validate_faculty_email(self.cleaned_data["username"])
 

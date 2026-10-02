@@ -29,8 +29,8 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RunSQL(
-            sql="ALTER TABLE activities_activity ADD COLUMN IF NOT EXISTS slug VARCHAR(255) NOT NULL DEFAULT ''",
-            reverse_sql="ALTER TABLE activities_activity DROP COLUMN IF EXISTS slug",
+            sql="ALTER TABLE activities_activity ADD COLUMN slug VARCHAR(255) NOT NULL DEFAULT ''",
+            reverse_sql="ALTER TABLE activities_activity DROP COLUMN slug",
         ),
         migrations.SeparateDatabaseAndState(
             state_operations=[

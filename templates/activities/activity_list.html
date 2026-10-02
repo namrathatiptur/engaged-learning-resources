@@ -5,9 +5,7 @@
 
 {% block extra_css %}
 <style>
-    body {
-        background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 45%, #fafbfc 100%);
-    }
+    body { background: #eef2f7; }
     .page-title {
         animation: title-in 0.55s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) backwards;
     }
@@ -274,29 +272,31 @@
         border: 1px solid rgba(13, 45, 76, 0.1);
     }
     .activity-grid {
-        display: flex;
-        flex-direction: column;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: clamp(1rem, 2vw, 1.5rem);
         width: 100%;
+        align-items: start;
+    }
+    @media (min-width: 1000px) {
+        .activity-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 430px) {
+        .activity-grid { grid-template-columns: 1fr; }
     }
     .activity-card {
         --card-i: 0;
-        background: white;
-        border: 1px solid #e0e0e0;
-        border-radius: 12px;
+        background: #fff;
+        border: 1px solid rgba(13, 45, 76, 0.08);
+        border-radius: 16px;
         overflow: hidden;
         display: flex;
         flex-direction: column;
         min-height: 0;
+        box-shadow: var(--shadow-card);
         transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
         animation: card-enter 0.5s ease backwards;
         animation-delay: calc(var(--card-i) * 0.06s);
-    }
-    @media (min-width: 640px) {
-        .activity-card {
-            flex-direction: row;
-            align-items: stretch;
-        }
     }
     @media (prefers-reduced-motion: reduce) {
         .activity-card {
@@ -326,7 +326,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         min-width: 0;
     }
     .card-body .tags {
@@ -345,15 +345,7 @@
         border-bottom: 1px solid #eee;
         background: #e8ecf1;
     }
-    @media (min-width: 640px) {
-        .card-media {
-            width: 280px;
-            flex: 0 0 280px;
-            max-width: 280px;
-            border-bottom: none;
-            border-right: 1px solid #eee;
-        }
-    }
+
     .card-media img {
         position: absolute;
         inset: 0;
@@ -374,7 +366,10 @@
     }
     .activity-card h2 {
         margin: 0 0 0.5rem;
-        font-size: 1.25rem;
+        font-family: var(--font-display);
+        font-size: 1.22rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
     }
     .activity-card h2 a {
         color: var(--su-navy);
@@ -389,8 +384,12 @@
         margin-bottom: 0.5rem;
     }
     .activity-meta .category {
-        color: var(--su-orange);
-        font-weight: 600;
+        color: var(--su-orange-dark);
+        font-weight: 700;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
     .card-desc {
         margin: 0 0 0.75rem;
@@ -522,6 +521,51 @@
         border-color: var(--su-orange);
         color: var(--su-orange);
     }
+
+    /* Click-to-preview popout */
+    .card-media { cursor: zoom-in; }
+    .card-media-zoom {
+        position: absolute; right: 0.6rem; bottom: 0.6rem;
+        width: 2rem; height: 2rem; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(13, 45, 76, 0.72); color: #fff;
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+        opacity: 0; transform: translateY(4px);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+    .card-media:hover .card-media-zoom,
+    .card-media:focus-visible .card-media-zoom { opacity: 1; transform: none; }
+    .card-media-zoom svg { width: 1.05rem; height: 1.05rem; }
+    @media (prefers-reduced-motion: reduce) { .card-media-zoom { transition: none; } }
+
+    .lightbox[hidden] { display: none; }
+    .lightbox { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+    .lightbox-backdrop { position: absolute; inset: 0; background: rgba(6, 20, 36, 0.62); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); }
+    .lightbox-panel {
+        position: relative; z-index: 1; max-width: 760px; width: 100%; max-height: 88vh; overflow: auto;
+        background: #fff; border-radius: 18px; box-shadow: 0 40px 90px -30px rgba(6, 20, 36, 0.7);
+        display: flex; flex-direction: column;
+    }
+    .lightbox-media { background: linear-gradient(145deg, #e8ecf1 0%, #d7dfe8 100%); height: 240px; }
+    .lightbox-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .lightbox-body { padding: 1.5rem 1.6rem 1.75rem; }
+    .lb-cat { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--su-orange-dark); margin: 0 0 0.4rem; }
+    .lightbox-body h2 { font-family: var(--font-display); font-size: 1.4rem; color: var(--su-navy); margin: 0 0 0.6rem; letter-spacing: -0.01em; }
+    #lb-desc { color: #46586b; line-height: 1.6; margin: 0 0 1.1rem; white-space: pre-line; }
+    .lb-preview { margin: 0 0 1.1rem; border: 1px solid rgba(13, 45, 76, 0.12); border-radius: 12px; overflow: hidden; }
+    .lb-preview iframe { width: 100%; height: 360px; border: 0; display: block; background: #f4f7fa; }
+    .lb-preview img { width: 100%; display: block; }
+    .lb-preview-note { font-size: 0.9rem; color: var(--su-gray-dark); background: rgba(247, 105, 0, 0.08); border: 1px solid rgba(247, 105, 0, 0.22); border-radius: 10px; padding: 0.75rem 1rem; margin: 0 0 1.1rem; }
+    .lb-preview-note a { color: var(--su-orange-dark); font-weight: 600; }
+    .lb-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .lightbox-close {
+        position: absolute; top: 0.75rem; right: 0.75rem; z-index: 2;
+        width: 2.2rem; height: 2.2rem; border-radius: 50%; border: none; cursor: pointer;
+        background: rgba(6, 20, 36, 0.55); color: #fff;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-close:hover { background: rgba(6, 20, 36, 0.82); }
+    .lightbox-close svg { width: 1.1rem; height: 1.1rem; }
 </style>
 {% endblock %}
 
@@ -624,8 +668,19 @@
     {% for row in activity_rows %}
     {% with activity=row.activity %}
     <article class="activity-card" style="--card-i: {{ forloop.counter0 }}">
-        <a href="{% url 'activities:detail' activity.slug %}" class="card-media" aria-label="View activity: {{ activity.title }}">
+        <a href="{% url 'activities:detail' activity.slug %}" class="card-media"
+           data-lightbox
+           data-title="{{ activity.title }}"
+           data-category="{% if activity.category %}{{ activity.category }}{% endif %}"
+           data-desc="{{ activity.description|truncatewords:60 }}"
+           data-img="{{ row.tile_image }}"
+           data-detail="{% url 'activities:detail' activity.slug %}"
+           {% if row.preview %}data-preview="{{ row.preview.open_url }}" data-preview-kind="{{ row.preview.kind }}"{% endif %}
+           aria-label="Preview activity: {{ activity.title }}">
             <img src="{{ row.tile_image }}" alt="" loading="lazy" decoding="async" width="800" height="600" fetchpriority="low">
+            <span class="card-media-zoom" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>
+            </span>
         </a>
         <div class="card-body">
             <h2><a href="{% url 'activities:detail' activity.slug %}">{{ activity.title }}</a></h2>
@@ -666,4 +721,100 @@
     <p>No activities found. Try adjusting your search or filters.</p>
 </div>
 {% endif %}
+
+<div class="lightbox" id="activity-lightbox" hidden>
+    <div class="lightbox-backdrop" data-close></div>
+    <div class="lightbox-panel" role="dialog" aria-modal="true" aria-labelledby="lb-title">
+        <button type="button" class="lightbox-close" data-close aria-label="Close preview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+        <div class="lightbox-media"><img id="lb-img" src="" alt=""></div>
+        <div class="lightbox-body">
+            <p class="lb-cat" id="lb-cat"></p>
+            <h2 id="lb-title"></h2>
+            <p id="lb-desc"></p>
+            <div id="lb-preview-slot"></div>
+            <div class="lb-actions">
+                <a id="lb-open" class="btn" href="#">Open activity</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function () {
+        var isAuthed = {{ user.is_authenticated|yesno:"true,false" }};
+        var lb = document.getElementById('activity-lightbox');
+        if (!lb) return;
+        var img = document.getElementById('lb-img');
+        var cat = document.getElementById('lb-cat');
+        var title = document.getElementById('lb-title');
+        var desc = document.getElementById('lb-desc');
+        var slot = document.getElementById('lb-preview-slot');
+        var openBtn = document.getElementById('lb-open');
+        var lastFocus = null;
+
+        function openLb(t) {
+            lastFocus = t;
+            img.style.display = '';
+            img.onerror = function () { img.style.display = 'none'; };
+            img.src = t.getAttribute('data-img') || '';
+            var c = t.getAttribute('data-category') || '';
+            cat.textContent = c;
+            cat.style.display = c ? '' : 'none';
+            title.textContent = t.getAttribute('data-title') || '';
+            desc.textContent = t.getAttribute('data-desc') || '';
+            openBtn.setAttribute('href', t.getAttribute('data-detail') || '#');
+            slot.innerHTML = '';
+            var pv = t.getAttribute('data-preview');
+            var kind = t.getAttribute('data-preview-kind');
+            if (pv) {
+                if (isAuthed) {
+                    var box = document.createElement('div');
+                    box.className = 'lb-preview';
+                    if (kind === 'image') {
+                        var im = document.createElement('img');
+                        im.src = pv; im.alt = 'Activity material preview';
+                        box.appendChild(im);
+                    } else {
+                        var fr = document.createElement('iframe');
+                        fr.src = pv; fr.title = 'Activity material preview'; fr.loading = 'lazy';
+                        box.appendChild(fr);
+                    }
+                    slot.appendChild(box);
+                } else {
+                    var note = document.createElement('p');
+                    note.className = 'lb-preview-note';
+                    var next = encodeURIComponent(t.getAttribute('data-detail') || '/');
+                    note.innerHTML = 'Sign in with your .edu email to preview the materials. <a href="/accounts/login/?next=' + next + '">Log in</a>';
+                    slot.appendChild(note);
+                }
+            }
+            lb.hidden = false;
+            document.body.style.overflow = 'hidden';
+            var closeBtn = lb.querySelector('.lightbox-close');
+            if (closeBtn) closeBtn.focus();
+        }
+
+        function closeLb() {
+            lb.hidden = true;
+            slot.innerHTML = '';
+            img.src = '';
+            document.body.style.overflow = '';
+            if (lastFocus) lastFocus.focus();
+        }
+
+        document.querySelectorAll('[data-lightbox]').forEach(function (el) {
+            el.addEventListener('click', function (e) { e.preventDefault(); openLb(el); });
+        });
+        lb.addEventListener('click', function (e) {
+            if (e.target.hasAttribute('data-close')) closeLb();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && !lb.hidden) closeLb();
+        });
+    })();
+</script>
 {% endblock %}

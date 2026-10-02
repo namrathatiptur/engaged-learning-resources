@@ -1,0 +1,10 @@
+{% load static %}
+{% comment %}
+Brand mark used next to the "TeachOrange" wordmark.
+Drop an officially-licensed logo at static/brand/otto.svg (or .png) and it appears
+everywhere this partial is included; if the file is missing it falls back to the 🍊 emoji.
+Only wire this in once the asset exists (a {% static %} reference to a missing file can
+500 under manifest static storage in production).
+{% endcomment %}
+<img src="{% static 'brand/otto.svg' %}" alt="" aria-hidden="true" class="brand-mark"
+     onerror="this.replaceWith(document.createTextNode('🍊'))">

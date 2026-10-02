@@ -4,65 +4,54 @@
 
 {% block extra_css %}
 <style>
+    body { background: #eef2f7; }
     .auth-card {
-        max-width: 420px;
-        margin: 0 auto;
-        padding: 2rem;
-        background: #fff;
-        border-radius: 12px;
-        border: 1px solid rgba(13, 45, 76, 0.1);
-        box-shadow: 0 8px 32px rgba(13, 45, 76, 0.08);
+        max-width: 430px; margin: 1rem auto; padding: 2.25rem;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+        border-radius: 18px; border: 1px solid rgba(255, 255, 255, 0.6);
+        box-shadow: var(--shadow-card);
+    }
+    .auth-eyebrow {
+        font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+        letter-spacing: 0.16em; text-transform: uppercase; color: var(--su-orange-dark);
+        margin: 0 0 0.6rem;
     }
     .auth-card h1 {
-        font-size: 1.35rem;
-        color: var(--su-navy);
-        margin: 0 0 1rem;
+        font-family: var(--font-display);
+        font-size: 1.45rem; font-weight: 700; letter-spacing: -0.01em;
+        color: var(--su-navy); margin: 0 0 0.4rem;
     }
+    .auth-sub { margin: 0 0 1.4rem; color: var(--su-gray-dark); font-size: 0.95rem; }
     .auth-card label {
-        display: block;
-        font-weight: 600;
-        font-size: 0.9rem;
-        color: var(--su-navy);
-        margin-bottom: 0.35rem;
+        display: block; font-weight: 600; font-size: 0.88rem; color: var(--su-navy); margin-bottom: 0.35rem;
     }
     .auth-card input[type="text"],
     .auth-card input[type="password"],
     .auth-card input[type="email"] {
-        width: 100%;
-        padding: 0.55rem 0.65rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        font-size: 1rem;
-        margin-bottom: 1rem;
+        width: 100%; padding: 0.65rem 0.8rem;
+        border: 1.5px solid rgba(13, 45, 76, 0.16); border-radius: 10px;
+        font-size: 1rem; font-family: inherit; background: #fff; margin-bottom: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .auth-card input:focus {
+        outline: none; border-color: var(--su-orange);
+        box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18);
     }
     .auth-card .errorlist {
-        list-style: none;
-        padding: 0;
-        margin: 0 0 1rem;
-        color: #b00020;
-        font-size: 0.9rem;
+        list-style: none; padding: 0; margin: 0 0 1rem; color: #b00020; font-size: 0.9rem;
     }
-    .auth-card .btn-row {
-        margin-top: 0.5rem;
-    }
-    .auth-card .sub {
-        margin-top: 1.25rem;
-        font-size: 0.95rem;
-        color: var(--su-gray-dark);
-    }
-    .auth-card .sub a {
-        color: var(--su-orange);
-        font-weight: 600;
-    }
+    .auth-card .btn-row { margin-top: 0.5rem; }
+    .auth-card .btn-row .btn { width: 100%; }
+    .auth-card .sub { margin-top: 1.25rem; font-size: 0.95rem; color: var(--su-gray-dark); }
+    .auth-card .sub a { color: var(--su-orange-dark); font-weight: 600; }
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="auth-card">
     <h1>Log in to <span class="brand-teach">Teach</span><span class="brand-orange">Orange</span> 🍊</h1>
-    <p style="margin: 0 0 1rem; color: var(--su-gray-dark); font-size: 0.95rem;">
-        Use your university email and password.
-    </p>
+    <p class="auth-sub">Use your university email and password.</p>
     <form method="post" action="{% url 'accounts:login' %}">
         {% csrf_token %}
         {% if form.non_field_errors %}
@@ -75,7 +64,13 @@
         {{ form.username }}
         {% if form.username.errors %}<ul class="errorlist">{{ form.username.errors }}</ul>{% endif %}
         <label for="id_password">Password</label>
-        {{ form.password }}
+        <div class="pw-wrap">
+            {{ form.password }}
+            <button type="button" class="pw-toggle" aria-label="Show password" aria-pressed="false">
+                <svg class="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a13.2 13.2 0 0 1-1.67 2.68M6.61 6.61A13.5 13.5 0 0 0 1 12s4 7 11 7a9.7 9.7 0 0 0 5.39-1.61"/><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M1 1l22 22"/></svg>
+            </button>
+        </div>
         {% if form.password.errors %}<ul class="errorlist">{{ form.password.errors }}</ul>{% endif %}
         <div class="btn-row">
             <button type="submit" class="btn">Log in</button>

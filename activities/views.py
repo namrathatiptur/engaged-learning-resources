@@ -2,15 +2,19 @@ import mimetypes
 import os
 from urllib.parse import quote, urlencode
 
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.mail import EmailMessage
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.http import FileResponse, Http404, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_http_methods
 
 from config.error_handlers import json_error_response
+from .forms import ContactForm
 from .models import Activity, Category, Material, Tag
 from .tile_images import tile_image_url
 
@@ -187,10 +191,59 @@ def home(request):
     return render(request, "home.html")
 
 
-@require_GET
+@require_http_methods(["GET", "POST"])
 def contact(request):
-    """Contact and team page."""
-    return render(request, "contact.html")
+    """Contact page with a message form that emails CONTACT_EMAIL."""
+    if request.method == "POST":
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            if form.is_spam():
+                # Silently accept honeypot hits without sending.
+                messages.success(request, "Thanks — your message has been sent.")
+                return redirect("contact")
+            data = form.cleaned_data
+            subject = data.get("subject") or f"Contact from {data['name']}"
+            body = (
+                f"Name: {data['name']}\n"
+                f"Email: {data['email']}\n\n"
+                f"{data['message']}"
+            )
+            recipient = getattr(settings, "CONTACT_EMAIL", settings.DEFAULT_FROM_EMAIL)
+            email = EmailMessage(
+                subject=f"[TeachOrange] {subject}",
+                body=body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                to=[recipient],
+                reply_to=[data["email"]],
+            )
+            try:
+                email.send(fail_silently=False)
+            except Exception:
+                messages.error(
+                    request,
+                    "Sorry — we couldn't send your message right now. "
+                    "Please email us directly at " + recipient + ".",
+                )
+            else:
+                messages.success(
+                    request, "Thanks — your message has been sent. We'll be in touch."
+                )
+                return redirect("contact")
+    else:
+        form = ContactForm()
+    return render(request, "contact.html", {"form": form})
+
+
+@require_GET
+def team(request):
+    """Meet the team page."""
+    return render(request, "team.html")
+
+
+@require_GET
+def consulting(request):
+    """TeachOrange Consulting page."""
+    return render(request, "consulting.html")
 
 
 def _get_filtered_queryset(request):
@@ -223,6 +276,20 @@ def _get_filtered_queryset(request):
         qs = qs.order_by("-created_at")
 
     return qs, None
+
+
+def _first_previewable(activity, request):
+    """First material that can render inline (PDF/image) — used by the list popout."""
+    for m in activity.materials.all():
+        kind = _preview_kind_for_material(m)
+        if kind in ("pdf", "image") and (m.preview_pdf or m.file):
+            return {
+                "open_url": request.build_absolute_uri(
+                    reverse("activities:material_open", kwargs={"material_id": m.id})
+                ),
+                "kind": kind,
+            }
+    return None
 
 
 @require_GET
@@ -289,7 +356,11 @@ def activity_list(request):
             )
         )
         activity_rows = [
-            {"activity": a, "tile_image": tile_image_url(a)}
+            {
+                "activity": a,
+                "tile_image": tile_image_url(a),
+                "preview": _first_previewable(a, request),
+            }
             for a in page_obj.object_list
         ]
         return render(

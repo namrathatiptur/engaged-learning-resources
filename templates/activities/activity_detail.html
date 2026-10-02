@@ -16,7 +16,10 @@
         .detail-header { animation: none; }
     }
     .detail-header h1 {
-        font-size: 1.75rem;
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 3.5vw, 2rem);
+        font-weight: 700;
+        letter-spacing: -0.02em;
         color: var(--su-navy);
         margin: 0 0 0.5rem;
     }
@@ -25,8 +28,12 @@
         color: var(--su-gray-dark);
     }
     .detail-meta .category {
-        color: var(--su-orange);
-        font-weight: 600;
+        color: var(--su-orange-dark);
+        font-weight: 700;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
     }
     .detail-content {
         margin-bottom: 2rem;
@@ -232,7 +239,7 @@
                         {% endif %}
                     {% elif m.preview_kind == "office" and m.file_open_url %}
                     <button type="button" class="btn btn-preview btn-preview-off" disabled
-                        title="Browser preview needs a PDF. In Admin, edit this material and upload a file under “Preview (PDF)” (export your Word doc as PDF). Download still gives the original Word file.">
+                        title="{% if user.is_staff %}Browser preview needs a PDF. In Admin, edit this material and upload a file under “Preview (PDF)” (export your Word doc as PDF). Download still gives the original Word file.{% else %}Preview isn’t available for this file type — use Download to open it.{% endif %}">
                         Preview
                     </button>
                     {% endif %}
@@ -262,7 +269,7 @@
                     {% endif %}
                 {% elif m.preview_kind == "office" %}
                 <p class="preview-note">
-                    Word, Excel, and PowerPoint can’t be previewed in the browser here. Use <strong>Download</strong>, or add a <strong>Preview (PDF)</strong> in admin{% if not user.is_authenticated %} and sign in{% endif %} to use preview.
+                    Word, Excel, and PowerPoint can’t be previewed in the browser here. Use <strong>Download</strong>{% if not user.is_authenticated %} after signing in{% endif %} to open this file.{% if user.is_staff %} To enable preview, add a <strong>Preview (PDF)</strong> in admin.{% endif %}
                 </p>
                 {% else %}
                 <p class="preview-note">Use <strong>Download</strong> for this file type.</p>

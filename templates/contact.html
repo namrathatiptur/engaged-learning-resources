@@ -1,200 +1,96 @@
 {% extends "base.html" %}
-{% load static %}
 
 {% block title %}Contact &amp; team{% endblock %}
 
 {% block extra_css %}
 <style>
-    .contact-page {
-        max-width: 920px;
-        margin: 0 auto;
-    }
-    .contact-intro {
-        margin: 0 0 2rem;
-        color: #444;
-        line-height: 1.65;
-        font-size: 1.02rem;
-    }
-    .contact-intro a {
-        color: var(--su-navy);
-        font-weight: 600;
-    }
-    .contact-intro a:hover {
-        color: var(--su-orange-dark);
-    }
+    body { background: #eef2f7; }
+    .contact-page { max-width: 1040px; margin: 0 auto; }
+    .contact-intro { margin: 0 0 2rem; color: #46586b; line-height: 1.7; font-size: 1.05rem; max-width: 74ch; }
+    .contact-intro a { color: var(--su-navy); font-weight: 600; }
+    .contact-intro a:hover { color: var(--su-orange-dark); }
     .section-label {
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--su-orange-dark);
-        margin: 0 0 0.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase;
+        color: var(--su-orange-dark); margin: 0 0 0.6rem;
+        display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .section-label::before {
+        content: ""; width: 1.35rem; height: 2px; border-radius: 2px;
+        background: linear-gradient(90deg, var(--su-orange), var(--su-orange-light));
     }
     .section-title {
-        font-size: 1.2rem;
-        font-weight: 700;
-        color: var(--su-navy);
-        margin: 0 0 1.25rem;
+        font-family: var(--font-display);
+        font-size: 1.35rem; font-weight: 700; color: var(--su-navy); margin: 0 0 1.25rem; letter-spacing: -0.01em;
     }
-    /* Photos: add files to static/team/ (see filenames in template). */
-    .person-photo {
-        position: relative;
-        flex-shrink: 0;
-        width: 112px;
-        height: 112px;
-        border-radius: 50%;
-        overflow: hidden;
-        background: linear-gradient(145deg, #e8eef4 0%, #d4dde8 100%);
-        border: 3px solid rgba(247, 105, 0, 0.35);
-        box-shadow: 0 6px 20px rgba(13, 45, 76, 0.12);
+
+    /* Two-column split: team left, form right */
+    .contact-split { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 2rem; align-items: start; }
+    @media (max-width: 860px) { .contact-split { grid-template-columns: 1fr; gap: 2.5rem; } }
+
+    .panel {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        border-radius: 18px; padding: 1.6rem 1.7rem; box-shadow: var(--shadow-card);
     }
-    .person-photo--lead {
-        width: 140px;
-        height: 140px;
-        border-width: 4px;
+    .contact-form-col .panel { border-top: 3px solid var(--su-orange); }
+
+    .avatar {
+        flex-shrink: 0; width: 84px; height: 84px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        font-family: var(--font-display); font-size: 1.5rem; font-weight: 700; color: #fff;
+        border: 3px solid rgba(255, 255, 255, 0.75);
+        box-shadow: 0 8px 22px -10px rgba(13, 45, 76, 0.55);
     }
-    .person-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
+    .avatar-sm { width: 52px; height: 52px; font-size: 1.05rem; }
+    .avatar--orange { background: linear-gradient(145deg, #FF9E2C 0%, var(--su-orange) 55%, var(--su-orange-dark) 100%); }
+    .avatar--sky { background: linear-gradient(145deg, #6fc4f2 0%, var(--brand-teach-mid) 55%, var(--brand-teach-deep) 100%); }
+    .avatar--navy { background: linear-gradient(145deg, #1c4b78 0%, var(--su-navy) 60%, var(--su-navy-900) 100%); }
+
+    .tm-lead { display: flex; gap: 1.1rem; align-items: flex-start; padding-bottom: 1.25rem; margin-bottom: 0.5rem; border-bottom: 1px solid rgba(13, 45, 76, 0.1); }
+    .tm-lead h3 { font-family: var(--font-display); font-size: 1.2rem; color: var(--su-navy); margin: 0 0 0.25rem; }
+    .tm-role { margin: 0; font-size: 0.88rem; font-weight: 600; color: var(--su-gray-dark); line-height: 1.5; }
+    .tm-contact { margin: 0.85rem 0 0; display: grid; gap: 0.5rem; }
+    .tm-contact div { display: flex; gap: 0.6rem; align-items: baseline; }
+    .tm-contact dt { font-family: var(--font-mono); font-size: 0.64rem; letter-spacing: 0.08em; text-transform: uppercase; color: #7a8a9a; min-width: 3.4rem; margin: 0; }
+    .tm-contact dd { margin: 0; font-size: 0.92rem; color: var(--ink); }
+    .tm-contact a { color: var(--su-navy); font-weight: 600; text-decoration: underline; text-decoration-color: rgba(247, 105, 0, 0.5); text-underline-offset: 2px; }
+    .tm-contact a:hover { color: var(--su-orange-dark); }
+
+    .tm-row { display: flex; gap: 0.85rem; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid rgba(13, 45, 76, 0.08); }
+    .tm-row:last-child { border-bottom: none; }
+    .tm-name { font-family: var(--font-display); font-weight: 700; color: var(--su-navy); margin: 0; font-size: 1rem; }
+    .tm-row .tm-role { font-size: 0.83rem; }
+    .team-more { margin: 1.1rem 0 0; }
+    .team-more a { color: var(--su-orange-dark); font-weight: 600; text-decoration: none; }
+    .team-more a:hover { text-decoration: underline; }
+
+    /* Contact form */
+    .cf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 1.25rem; }
+    @media (max-width: 560px) { .cf-grid { grid-template-columns: 1fr; } }
+    .cf-field { margin-bottom: 1rem; display: flex; flex-direction: column; }
+    .cf-field label { font-weight: 600; font-size: 0.88rem; color: var(--su-navy); margin-bottom: 0.35rem; }
+    .contact-form input, .contact-form textarea {
+        width: 100%; padding: 0.65rem 0.8rem;
+        border: 1.5px solid rgba(13, 45, 76, 0.16); border-radius: 10px;
+        font-size: 1rem; font-family: inherit; background: #fff;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .person-photo img.is-hidden {
-        display: none;
+    .contact-form input:focus, .contact-form textarea:focus {
+        outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18);
     }
-    .person-photo-fallback {
-        position: absolute;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.65rem;
-        font-weight: 700;
-        color: var(--su-navy);
-        letter-spacing: 0.02em;
-        user-select: none;
-    }
-    .person-photo--lead .person-photo-fallback {
-        font-size: 2rem;
-    }
-    .person-photo.has-fallback .person-photo-fallback {
-        display: flex;
-    }
-    .lead-card {
-        display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
-        align-items: center;
-        text-align: center;
-        background: linear-gradient(165deg, #ffffff 0%, #fafcfe 100%);
-        border: 1px solid rgba(13, 45, 76, 0.12);
-        border-radius: 16px;
-        padding: 1.75rem 1.5rem 1.5rem;
-        margin-bottom: 2.5rem;
-        box-shadow: 0 8px 32px rgba(13, 45, 76, 0.08);
-        border-top: 4px solid var(--su-orange);
-    }
-    @media (min-width: 640px) {
-        .lead-card {
-            flex-direction: row;
-            align-items: flex-start;
-            text-align: left;
-            padding: 1.75rem 2rem;
-        }
-    }
-    .lead-body {
-        flex: 1;
-        min-width: 0;
-    }
-    .lead-card h2 {
-        margin: 0 0 0.35rem;
-        font-size: 1.35rem;
-        font-weight: 700;
-        color: var(--su-navy);
-        line-height: 1.2;
-    }
-    .lead-card .role {
-        margin: 0 0 1rem;
-        font-size: 0.95rem;
-        font-weight: 600;
-        color: var(--su-gray-dark);
-        line-height: 1.45;
-    }
-    .lead-card dl {
-        margin: 0;
-        font-size: 0.92rem;
-        line-height: 1.5;
-    }
-    .lead-card dt {
-        margin: 0.6rem 0 0.12rem;
-        font-weight: 700;
-        font-size: 0.72rem;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: #666;
-    }
-    .lead-card dt:first-of-type {
-        margin-top: 0;
-    }
-    .lead-card dd {
-        margin: 0;
-        color: #333;
-    }
-    .lead-card a {
-        color: var(--su-navy);
-        font-weight: 600;
-        text-decoration: underline;
-        text-decoration-color: rgba(247, 105, 0, 0.45);
-        text-underline-offset: 2px;
-    }
-    .lead-card a:hover {
-        color: var(--su-orange-dark);
-    }
-    .team-grid {
-        display: grid;
-        gap: 1.25rem;
-    }
-    @media (min-width: 700px) {
-        .team-grid {
-            grid-template-columns: repeat(3, 1fr);
-        }
-    }
-    .team-card {
-        background: linear-gradient(165deg, #ffffff 0%, #fafcfe 100%);
-        border: 1px solid rgba(13, 45, 76, 0.12);
-        border-radius: 14px;
-        padding: 1.35rem 1.15rem 1.25rem;
-        box-shadow: 0 6px 24px rgba(13, 45, 76, 0.07);
-        border-top: 3px solid var(--brand-teach-mid);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-    }
-    .team-card h3 {
-        margin: 0.85rem 0 0.35rem;
-        font-size: 1.05rem;
-        font-weight: 700;
-        color: var(--su-navy);
-        line-height: 1.25;
-    }
-    .team-card .role {
-        margin: 0;
-        font-size: 0.88rem;
-        font-weight: 600;
-        color: var(--su-gray-dark);
-        line-height: 1.45;
-    }
+    .contact-form textarea { resize: vertical; min-height: 130px; }
+    .contact-form .btn { width: 100%; }
+    .cf-error { color: #b00020; font-size: 0.85rem; margin: 0.35rem 0 0; }
+
     .contact-footnote {
-        margin: 2rem 0 0;
-        padding: 1rem 1.15rem;
+        margin: 2.25rem 0 0; padding: 1.1rem 1.2rem;
         background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-        border: 1px solid rgba(59, 130, 246, 0.25);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        color: #1e3a5f;
-        line-height: 1.55;
+        border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px;
+        font-size: 0.95rem; color: #1e3a5f; line-height: 1.6;
     }
+    .contact-footnote a { color: #0d4a8c; font-weight: 600; }
 </style>
 {% endblock %}
 
@@ -203,56 +99,75 @@
     <h1 class="page-title">Contact us</h1>
     <p class="contact-intro">
         Questions about <span class="brand-teach">Teach</span><span class="brand-orange">Orange</span>, contributing activities, or faculty access?
-        Contact <strong>Mark D. Brockway</strong> (lead). <strong>Benjamin Katz</strong> and <strong>Sadie Rose Lehrfeld</strong> gathered the teaching resources; <strong>Abhijnya Konanduru Gurumurthy</strong> built this website.
+        Meet the team on the left, or send us a message directly.
     </p>
 
-    <p class="section-label">Faculty lead</p>
-    <section class="lead-card" aria-labelledby="lead-name">
-        <figure class="person-photo person-photo--lead" id="photo-mark">
-            <img src="{% static 'team/mark-brockway.jpg' %}" alt="Mark D. Brockway" width="140" height="140" loading="lazy" onerror="this.classList.add('is-hidden'); this.parentElement.classList.add('has-fallback');">
-            <span class="person-photo-fallback" aria-hidden="true">MB</span>
-        </figure>
-        <div class="lead-body">
-            <h2 id="lead-name">Mark D. Brockway</h2>
-            <p class="role">Assistant Teaching Professor, Political Science · Maxwell School of Citizenship and Public Affairs, Syracuse University</p>
-            <dl>
-                <dt>Email</dt>
-                <dd><a href="mailto:mdbrockw@syr.edu">mdbrockw@syr.edu</a></dd>
-                <dt>Phone</dt>
-                <dd><a href="tel:+13154432416">315.443.2416</a></dd>
-                <dt>Office</dt>
-                <dd>100 Eggers Hall, Syracuse, NY 13244</dd>
-            </dl>
-        </div>
-    </section>
+    <div class="contact-split">
+        <!-- Left: meet the team -->
+        <section class="contact-team-col" aria-labelledby="team-heading">
+            <p class="section-label">Meet the team</p>
+            <h2 id="team-heading" class="section-title">The people behind TeachOrange</h2>
+            <div class="panel">
+                <div class="tm-lead">
+                    <div class="avatar avatar--orange" aria-hidden="true">MB</div>
+                    <div>
+                        <h3>Mark D. Brockway</h3>
+                        <p class="tm-role">Faculty lead · Assistant Teaching Professor, Political Science · Maxwell School, Syracuse University</p>
+                        <dl class="tm-contact">
+                            <div><dt>Email</dt><dd><a href="mailto:mdbrockw@syr.edu">mdbrockw@syr.edu</a></dd></div>
+                            <div><dt>Phone</dt><dd><a href="tel:+13154432416">315.443.2416</a></dd></div>
+                            <div><dt>Office</dt><dd>100 Eggers Hall, Syracuse, NY 13244</dd></div>
+                        </dl>
+                    </div>
+                </div>
+                <div class="tm-row">
+                    <div class="avatar avatar-sm avatar--sky" aria-hidden="true">BK</div>
+                    <div><p class="tm-name">Benjamin Katz</p><p class="tm-role">Collected teaching resources · Syracuse University</p></div>
+                </div>
+                <div class="tm-row">
+                    <div class="avatar avatar-sm avatar--navy" aria-hidden="true">NT</div>
+                    <div><p class="tm-name">Namratha Tiptur Manjunath</p><p class="tm-role">Website &amp; platform development · Syracuse University</p></div>
+                </div>
+                <p class="team-more"><a href="{% url 'team' %}">Full team page &rarr;</a></p>
+            </div>
+        </section>
 
-    <p class="section-label">Student team</p>
-    <h2 class="section-title">Resources &amp; website</h2>
-    <div class="team-grid">
-        <article class="team-card" aria-labelledby="name-benjamin">
-            <figure class="person-photo" id="photo-benjamin">
-                <img src="{% static 'team/benjamin-katz.jpg' %}" alt="Benjamin Katz" width="112" height="112" loading="lazy" onerror="this.classList.add('is-hidden'); this.parentElement.classList.add('has-fallback');">
-                <span class="person-photo-fallback" aria-hidden="true">BK</span>
-            </figure>
-            <h3 id="name-benjamin">Benjamin Katz</h3>
-            <p class="role">Collected teaching resources · Syracuse University</p>
-        </article>
-        <article class="team-card" aria-labelledby="name-sadie">
-            <figure class="person-photo" id="photo-sadie">
-                <img src="{% static 'team/sadie-lehrfeld.jpg' %}" alt="Sadie Rose Lehrfeld" width="112" height="112" loading="lazy" onerror="this.classList.add('is-hidden'); this.parentElement.classList.add('has-fallback');">
-                <span class="person-photo-fallback" aria-hidden="true">SL</span>
-            </figure>
-            <h3 id="name-sadie">Sadie Rose Lehrfeld</h3>
-            <p class="role">Collected teaching resources · Syracuse University</p>
-        </article>
-        <article class="team-card" aria-labelledby="name-abhijnya">
-            <figure class="person-photo" id="photo-abhijnya">
-                <img src="{% static 'team/abhijnya-konanduru-gurumurthy.jpg' %}" alt="Abhijnya Konanduru Gurumurthy" width="112" height="112" loading="lazy" onerror="this.classList.add('is-hidden'); this.parentElement.classList.add('has-fallback');">
-                <span class="person-photo-fallback" aria-hidden="true">AK</span>
-            </figure>
-            <h3 id="name-abhijnya">Abhijnya Konanduru Gurumurthy</h3>
-            <p class="role">Website &amp; platform development · Syracuse University</p>
-        </article>
+        <!-- Right: contact form -->
+        <section class="contact-form-col" aria-labelledby="contact-form-title">
+            <p class="section-label">Send a message</p>
+            <h2 id="contact-form-title" class="section-title">Get in touch</h2>
+            <div class="panel">
+                <form method="post" action="{% url 'contact' %}" class="contact-form" novalidate>
+                    {% csrf_token %}
+                    <div style="position:absolute; left:-9999px;" aria-hidden="true">
+                        <label for="{{ form.website.id_for_label }}">Leave this field empty</label>
+                        {{ form.website }}
+                    </div>
+                    <div class="cf-grid">
+                        <div class="cf-field">
+                            <label for="{{ form.name.id_for_label }}">Name</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}<p class="cf-error">{{ form.name.errors|striptags }}</p>{% endif %}
+                        </div>
+                        <div class="cf-field">
+                            <label for="{{ form.email.id_for_label }}">Email</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<p class="cf-error">{{ form.email.errors|striptags }}</p>{% endif %}
+                        </div>
+                    </div>
+                    <div class="cf-field">
+                        <label for="{{ form.subject.id_for_label }}">Subject</label>
+                        {{ form.subject }}
+                    </div>
+                    <div class="cf-field">
+                        <label for="{{ form.message.id_for_label }}">Message</label>
+                        {{ form.message }}
+                        {% if form.message.errors %}<p class="cf-error">{{ form.message.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <button type="submit" class="btn">Send message</button>
+                </form>
+            </div>
+        </section>
     </div>
 
     <p class="contact-footnote">
