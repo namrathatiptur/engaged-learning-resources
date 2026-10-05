@@ -6,520 +6,123 @@
 {% block extra_css %}
 <style>
     body { background: #eef2f7; }
-    .page-title {
-        animation: title-in 0.55s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) backwards;
-    }
-    @keyframes title-in {
-        from { opacity: 0; transform: translateY(8px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .page-title { animation: none; }
-    }
-    .filters-panel {
-        margin-bottom: 2rem;
-        border-radius: 14px;
-        overflow: hidden;
-        border: 1px solid rgba(13, 45, 76, 0.1);
-        box-shadow: 0 8px 32px rgba(13, 45, 76, 0.07), 0 2px 8px rgba(13, 45, 76, 0.04);
-        animation: filters-in 0.5s var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) 0.08s backwards;
-    }
-    .filters-panel::before {
-        content: "";
-        display: block;
-        height: 4px;
-        background: linear-gradient(90deg, var(--su-navy) 0%, var(--su-orange) 55%, var(--su-orange-light) 100%);
-    }
-    @keyframes filters-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .filters-panel { animation: none; }
-    }
-    .filters-panel-inner {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
-        padding: 0;
-        background:
-            radial-gradient(ellipse 90% 70% at 100% 0%, rgba(247, 105, 0, 0.12) 0%, transparent 52%),
-            radial-gradient(ellipse 70% 55% at 0% 100%, rgba(13, 45, 76, 0.09) 0%, transparent 48%),
-            linear-gradient(155deg, #feffff 0%, #eef3f8 42%, #f5f8fb 100%);
-    }
-    .filters-panel-inner::before {
-        content: "";
-        position: absolute;
-        inset: -40%;
-        background:
-            radial-gradient(circle at 25% 35%, rgba(247, 105, 0, 0.09) 0%, transparent 42%),
-            radial-gradient(circle at 75% 65%, rgba(26, 61, 92, 0.11) 0%, transparent 44%),
-            radial-gradient(circle at 50% 50%, rgba(255, 142, 0, 0.05) 0%, transparent 50%);
-        animation: filters-bg-drift 22s ease-in-out infinite alternate;
-        pointer-events: none;
-        z-index: 0;
-    }
-    @keyframes filters-bg-drift {
-        0% { transform: translate(0, 0) rotate(0deg); }
-        100% { transform: translate(3%, -2%) rotate(1.5deg); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .filters-panel-inner::before { animation: none; }
-    }
-    .filters-header {
-        position: relative;
-        z-index: 1;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1.25rem 1.35rem 0.75rem;
-        border-bottom: 1px solid rgba(13, 45, 76, 0.08);
-    }
-    .filters-header-main {
-        display: flex;
-        gap: 0.85rem;
-        align-items: center;
-        min-width: 0;
-        flex: 1;
-    }
-    .filters-header-icon {
-        flex-shrink: 0;
-        width: 2.5rem;
-        height: 2.5rem;
-        border-radius: 10px;
-        background: linear-gradient(145deg, rgba(13, 45, 76, 0.08) 0%, rgba(247, 105, 0, 0.12) 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--su-navy);
-    }
-    .filters-header-icon svg {
-        width: 1.25rem;
-        height: 1.25rem;
-        opacity: 0.9;
-    }
-    .filters-header-text {
-        flex: 1;
-        min-width: 0;
-    }
-    .filters-header-title-row {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.65rem 1.25rem;
-    }
-    .filters-heading {
-        margin: 0;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: var(--su-navy);
-        letter-spacing: -0.02em;
-        flex-shrink: 0;
-        line-height: 1.25;
-    }
-    .filters-caption {
-        margin: 0;
-        font-size: 0.875rem;
-        line-height: 1.45;
-        color: var(--su-gray-dark);
-        flex: 1;
-        min-width: min(100%, 12rem);
-        padding: 0.15rem 0 0.15rem 1rem;
-        border-left: 3px solid rgba(247, 105, 0, 0.45);
-    }
-    @media (max-width: 640px) {
-        .filters-header-title-row {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-        .filters-caption {
-            border-left: none;
-            padding-left: 0;
-            padding-top: 0.5rem;
-            border-top: 1px solid rgba(13, 45, 76, 0.1);
-            width: 100%;
-        }
-    }
-    .filters-clear {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.45rem 0.85rem;
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--su-navy);
-        text-decoration: none;
-        border-radius: 8px;
-        border: 1px solid rgba(13, 45, 76, 0.18);
-        background: #fff;
-        transition: border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
-        white-space: nowrap;
-    }
-    .filters-clear:hover {
-        border-color: var(--su-orange);
-        color: var(--su-orange);
-        box-shadow: 0 2px 10px rgba(247, 105, 0, 0.15);
-    }
-    .filters-clear svg {
-        width: 0.9rem;
-        height: 0.9rem;
-        flex-shrink: 0;
-    }
-    .filters-form {
-        position: relative;
-        z-index: 1;
-        padding: 1.15rem 1.35rem 1.35rem;
-    }
-    .filters-grid {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 1rem 1.25rem;
-    }
-    @media (min-width: 520px) {
-        .filters-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-        .filters-field--search {
-            grid-column: 1 / -1;
-        }
-    }
-    @media (min-width: 900px) {
-        .filters-grid {
-            grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(0, 1fr));
-            align-items: end;
-        }
-        .filters-field--search {
-            grid-column: auto;
-        }
-    }
-    .filters-field label {
-        display: flex;
-        align-items: center;
-        gap: 0.4rem;
-        font-size: 0.72rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        text-transform: uppercase;
-        color: var(--su-navy);
-        margin-bottom: 0.4rem;
-    }
-    .filters-field label .lbl-icon {
-        display: inline-flex;
-        color: var(--su-orange);
-        opacity: 0.85;
-    }
-    .filters-field label .lbl-icon svg {
-        width: 0.95rem;
-        height: 0.95rem;
-        display: block;
-    }
-    .filters-field input,
-    .filters-field select {
-        width: 100%;
-        min-height: 2.65rem;
-        padding: 0.55rem 0.85rem;
-        border: 1px solid rgba(13, 45, 76, 0.15);
-        border-radius: 8px;
-        font-size: 0.95rem;
-        font-family: inherit;
-        background: #fff;
-        transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-    .filters-field select {
-        cursor: pointer;
-        appearance: none;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230D2D4C' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 0.75rem center;
-        padding-right: 2.25rem;
-    }
-    .filters-field input:focus,
-    .filters-field select:focus {
-        outline: none;
-        border-color: var(--su-orange);
-        box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18);
-    }
-    .filters-footer {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        margin-top: 1.25rem;
-        padding-top: 1.1rem;
-        border-top: 1px solid rgba(13, 45, 76, 0.07);
-    }
-    .filters-footer .btn {
-        padding: 0.6rem 1.35rem;
-        font-size: 0.95rem;
-    }
-    .filters-hint {
-        margin: 0;
-        font-size: 0.82rem;
-        color: var(--su-gray-dark);
-        max-width: 36ch;
-        line-height: 1.4;
-    }
-    .filters-hint kbd {
-        font-family: inherit;
-        font-size: 0.78em;
-        padding: 0.1em 0.4em;
-        border-radius: 4px;
-        background: rgba(13, 45, 76, 0.06);
-        border: 1px solid rgba(13, 45, 76, 0.1);
-    }
-    .activity-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: clamp(1rem, 2vw, 1.5rem);
-        width: 100%;
-        align-items: start;
-    }
-    @media (min-width: 1000px) {
-        .activity-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    }
-    @media (max-width: 430px) {
-        .activity-grid { grid-template-columns: 1fr; }
-    }
-    .activity-card {
-        --card-i: 0;
-        background: #fff;
-        border: 1px solid rgba(13, 45, 76, 0.08);
-        border-radius: 16px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        min-height: 0;
-        box-shadow: var(--shadow-card);
-        transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
-        animation: card-enter 0.5s ease backwards;
-        animation-delay: calc(var(--card-i) * 0.06s);
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .activity-card {
-            animation: none;
-        }
-        .activity-card:hover {
-            transform: none;
-        }
-    }
-    @keyframes card-enter {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    .activity-card:hover {
-        border-color: var(--su-orange);
-        box-shadow: 0 12px 36px rgba(13, 45, 76, 0.1), 0 4px 16px rgba(247, 105, 0, 0.14);
-        transform: translateY(-2px);
-    }
-    .card-body {
-        padding: 1.25rem 1.25rem 1.1rem;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        min-width: 0;
-    }
-    .card-body .tags {
-        margin-top: auto;
-        padding-top: 0.65rem;
-    }
-    /* Same aspect box for every card; image fills with object-fit: cover */
-    .card-media {
-        display: block;
-        position: relative;
-        margin: 0;
-        flex-shrink: 0;
-        width: 100%;
-        aspect-ratio: 4 / 3;
-        overflow: hidden;
-        border-bottom: 1px solid #eee;
-        background: #e8ecf1;
-    }
 
-    .card-media img {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        object-position: center;
-        display: block;
-        transition: transform 0.35s ease;
+    /* ---------- Header + search ---------- */
+    .browse-head { display: grid; gap: 1rem; margin: 0 0 1.75rem; }
+    .browse-head .page-title { margin: 0; }
+    .browse-search { position: relative; max-width: 760px; }
+    .browse-search svg { position: absolute; left: 1.05rem; top: 50%; width: 1.2rem; height: 1.2rem; transform: translateY(-50%); color: var(--su-orange-dark); pointer-events: none; }
+    .browse-search input {
+        width: 100%; height: 3.25rem; padding: 0 6.5rem 0 3rem; border-radius: 14px;
+        border: 1.5px solid rgba(13, 45, 76, 0.14); background: #fff; font: inherit; font-size: 1.05rem; color: var(--ink);
+        box-shadow: 0 12px 30px -20px rgba(13, 45, 76, 0.5); transition: border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .activity-card:hover .card-media img {
-        transform: scale(1.04);
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .activity-card:hover .card-media img {
-            transform: none;
+    .browse-search input:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 4px rgba(247, 105, 0, 0.16); }
+    .browse-search button { position: absolute; right: 0.4rem; top: 0.4rem; bottom: 0.4rem; padding: 0 1.1rem; border-radius: 10px; }
+    .auth-note { margin: 0; font-size: 0.92rem; color: #55677a; }
+    .auth-note a { color: var(--su-orange-dark); font-weight: 600; }
+
+    /* ---------- Layout: sidebar + results ---------- */
+    .browse { display: grid; gap: 1.75rem; align-items: start; }
+    @media (min-width: 900px) { .browse { grid-template-columns: 250px minmax(0, 1fr); gap: 2rem; } }
+    .filters-toggle { display: none; }
+    .browse-side { display: grid; gap: 1.5rem; }
+    @media (min-width: 900px) { .browse-side { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); max-height: calc(100vh - var(--header-h, 61px) - 2.5rem); overflow: auto; padding-right: 0.25rem; } }
+    @media (max-width: 899px) {
+        .js-filters .filters-toggle {
+            display: inline-flex; align-items: center; gap: 0.5rem; justify-self: start;
+            padding: 0.55rem 1rem; border-radius: 999px; border: 1.5px solid rgba(13, 45, 76, 0.16); background: #fff;
+            font: inherit; font-weight: 700; color: var(--su-navy); cursor: pointer;
         }
+        .filters-toggle svg { width: 1.1rem; height: 1.1rem; }
+        .filters-toggle .count { min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 999px; background: var(--su-orange); color: #fff; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; }
+        .js-filters .browse-side { display: none; padding: 1.1rem; border-radius: 16px; background: #fff; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card); }
+        .js-filters.filters-open .browse-side { display: grid; }
     }
-    .activity-card h2 {
-        margin: 0 0 0.5rem;
-        font-family: var(--font-display);
-        font-size: 1.22rem;
-        font-weight: 600;
-        letter-spacing: -0.01em;
+    .side-group h2 {
+        margin: 0 0 0.6rem; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
+        letter-spacing: 0.14em; text-transform: uppercase; color: var(--su-orange-dark);
     }
-    .activity-card h2 a {
-        color: var(--su-navy);
-        text-decoration: none;
+    .cat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+    .cat-list a {
+        display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
+        padding: 0.5rem 0.7rem; border-radius: 10px; text-decoration: none; color: var(--su-navy); font-weight: 600; font-size: 0.95rem;
+        transition: background 0.15s ease, color 0.15s ease;
     }
-    .activity-card h2 a:hover {
-        color: var(--su-orange);
+    .cat-list a:hover { background: rgba(13, 45, 76, 0.06); }
+    .cat-list a[aria-current="true"] { background: var(--su-navy); color: #fff; }
+    .cat-list .n { font-size: 0.78rem; font-weight: 700; min-width: 1.6rem; text-align: center; padding: 0.1rem 0.4rem; border-radius: 999px; background: rgba(13, 45, 76, 0.07); color: #55677a; }
+    .cat-list a[aria-current="true"] .n { background: rgba(255, 255, 255, 0.18); color: #fff; }
+    .side-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .side-tags .tag-chip .n { margin-left: 0.35rem; font-size: 0.72rem; opacity: 0.6; }
+    .side-tags .tag.tag-chip:nth-child(n) { rotate: 0deg; }  /* no sticker tilt in the filter list */
+
+    /* ---------- Results header ---------- */
+    .results-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 1rem; }
+    .results-count { margin: 0; font-weight: 700; color: var(--su-navy); }
+    .sort-form { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #55677a; }
+    .sort-form select {
+        font: inherit; font-weight: 600; color: var(--su-navy); cursor: pointer;
+        padding: 0.45rem 2.4rem 0.45rem 0.85rem; border-radius: 10px; border: 1.5px solid rgba(13, 45, 76, 0.14);
+        appearance: none; -webkit-appearance: none;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230D2D4C' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1rem;
     }
-    .activity-meta {
-        font-size: 0.85rem;
-        color: var(--su-gray-dark);
-        margin-bottom: 0.5rem;
+    .sort-form select:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18); }
+    .active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin: 0 0 1.1rem; }
+    .active-chip {
+        display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.45rem 0.3rem 0.75rem; border-radius: 999px;
+        background: #fff4ea; border: 1px solid rgba(247, 105, 0, 0.35); color: var(--su-orange-dark); font-size: 0.85rem; font-weight: 600; text-decoration: none;
     }
-    .activity-meta .category {
-        color: var(--su-orange-dark);
-        font-weight: 700;
-        font-family: var(--font-mono);
-        font-size: 0.78rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
+    .active-chip svg { width: 0.95rem; height: 0.95rem; }
+    .active-chip:hover { background: #ffe8d4; }
+    .clear-all { font-size: 0.85rem; font-weight: 600; color: #55677a; }
+
+    /* ---------- Cards ---------- */
+    .activity-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+    .act-card {
+        position: relative; display: flex; flex-direction: column; overflow: hidden;
+        background: #fff; border-radius: 18px; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card);
+        transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease;
+        animation: card-in 0.5s calc(var(--card-i, 0) * 0.05s) var(--ease-out) backwards;
     }
-    .card-desc {
-        margin: 0 0 0.75rem;
-        line-height: 1.5;
-        color: #333;
+    .act-card:hover { transform: translateY(-4px); border-color: rgba(247, 105, 0, 0.3); box-shadow: 0 26px 56px -28px rgba(13, 45, 76, 0.55); }
+    @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+    .card-media { position: relative; z-index: 2; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #e3e8ef; }
+    .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s var(--ease-out); }
+    .act-card:hover .card-media img { transform: scale(1.04); }
+    .card-pill {
+        position: absolute; left: 0.65rem; top: 0.65rem; max-width: calc(100% - 1.3rem);
+        padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.02em;
+        color: var(--su-navy); background: rgba(255, 255, 255, 0.92); box-shadow: 0 4px 10px -6px rgba(13, 45, 76, 0.6);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .card-actions {
-        margin: 0.75rem 0 0;
+    .card-time {
+        position: absolute; left: 0.65rem; bottom: 0.65rem; display: inline-flex; align-items: center; gap: 0.3rem;
+        padding: 0.25rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: #fff; background: rgba(13, 45, 76, 0.78);
+        backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
     }
-    .pagination {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .pagination a, .pagination span {
-        padding: 0.5rem 1rem;
-        border-radius: 999px;
-        text-decoration: none;
-        font-weight: 600;
-        font-size: 0.9rem;
-        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .pagination a {
-        background: #fff;
-        color: var(--su-navy);
-        border: 1px solid rgba(13, 45, 76, 0.12);
-        box-shadow: 0 2px 8px rgba(13, 45, 76, 0.05);
-    }
-    .pagination a:hover {
-        background: var(--su-orange);
-        color: white;
-        border-color: var(--su-orange);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(247, 105, 0, 0.35);
-    }
-    .pagination .current {
-        background: linear-gradient(135deg, var(--su-navy) 0%, var(--su-navy-light) 100%);
-        color: white;
-        border: 1px solid transparent;
-        box-shadow: 0 4px 14px rgba(13, 45, 76, 0.2);
-    }
+    .card-time svg { width: 0.9rem; height: 0.9rem; }
+    .act-body { display: flex; flex-direction: column; gap: 0.55rem; padding: 1rem 1.1rem 1.15rem; flex: 1; }
+    .act-body h2 { margin: 0; font-family: var(--font-display); font-size: 1.12rem; line-height: 1.3; letter-spacing: -0.01em; }
+    .act-body h2 a { color: var(--su-navy); text-decoration: none; }
+    .act-body h2 a::after { content: ""; position: absolute; inset: 0; z-index: 1; }  /* whole card links to the activity */
+    .act-card:hover h2 a { color: var(--su-orange-dark); }
+    .act-desc { margin: 0; color: #55677a; font-size: 0.93rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .act-tags { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: auto; padding-top: 0.25rem; }
+    .act-tags .tag.tag-chip { padding: 0.22rem 0.6rem; font-size: 0.75rem; }
+    .tag-more { display: inline-flex; align-items: center; padding: 0.22rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: #6b7c8d; background: #eef2f7; }
+
+    .pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin: 2rem 0 0; font-weight: 600; }
+    .pagination a { color: var(--su-orange-dark); }
+    .pagination .current { color: #55677a; }
+
+    /* ---------- Empty state ---------- */
+    .empty-state { text-align: center; padding: 2.5rem 1rem; border-radius: 18px; background: #fff; border: 1px dashed rgba(13, 45, 76, 0.18); }
+    .empty-state .mascot { width: 110px; height: 102px; margin: 0 auto 0.75rem; display: block; }
+    .empty-state p { margin: 0 0 1rem; color: #46586b; }
     @media (prefers-reduced-motion: reduce) {
-        .pagination a:hover { transform: none; }
-    }
-    .pagination .disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    .results-count {
-        font-size: 0.9rem;
-        color: var(--su-gray-dark);
-        margin-bottom: 1.25rem;
-        padding: 0.5rem 0.75rem;
-        display: inline-block;
-        background: rgba(13, 45, 76, 0.04);
-        border-radius: 8px;
-        font-weight: 600;
-    }
-    .empty-state {
-        text-align: center;
-        padding: 3rem 2rem;
-        color: var(--su-gray-dark);
-        background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
-        border: 1px dashed rgba(13, 45, 76, 0.15);
-        border-radius: 12px;
-        animation: empty-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-    }
-    @keyframes empty-in {
-        from { opacity: 0; transform: scale(0.98); }
-        to { opacity: 1; transform: scale(1); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .empty-state { animation: none; }
-    }
-    .list-auth-banner {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.75rem 1.25rem;
-        margin-bottom: 1.5rem;
-        padding: 0.85rem 1.1rem;
-        background: linear-gradient(135deg, rgba(13, 45, 76, 0.06) 0%, rgba(247, 105, 0, 0.09) 100%);
-        border: 1px solid rgba(13, 45, 76, 0.12);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        color: var(--su-gray-dark);
-    }
-    .list-auth-banner p {
-        margin: 0;
-        flex: 1;
-        min-width: min(100%, 12rem);
-    }
-    .list-auth-banner .btn {
-        flex-shrink: 0;
-    }
-    .tag-filter-banner {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 0.65rem 1rem;
-        margin: 0 0 1rem;
-        padding: 0.65rem 1rem;
-        background: rgba(247, 105, 0, 0.1);
-        border: 1px solid rgba(247, 105, 0, 0.35);
-        border-radius: 10px;
-        font-size: 0.95rem;
-        color: var(--su-navy);
-    }
-    .tag-filter-banner strong {
-        font-weight: 700;
-        color: var(--su-orange);
-    }
-    .tag-filter-banner .tag-filter-remove {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.35rem 0.75rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--su-navy);
-        text-decoration: none;
-        border-radius: 8px;
-        border: 1px solid rgba(13, 45, 76, 0.2);
-        background: #fff;
-    }
-    .tag-filter-banner .tag-filter-remove:hover {
-        border-color: var(--su-orange);
-        color: var(--su-orange);
+        .act-card { animation: none; }
+        .act-card:hover, .act-card:hover .card-media img { transform: none; }
     }
 
     /* Click-to-preview popout */
@@ -570,157 +173,135 @@
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">Browse Teaching Activities</h1>
-{% if not user.is_authenticated %}
-<div class="list-auth-banner" role="region" aria-label="Sign in">
-    <p>Preview and download on activity pages require a <strong>.edu</strong> sign-in.</p>
-    <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}" class="btn">Log in</a>
-    <a href="{% url 'accounts:register' %}" class="btn btn-outline">Register</a>
+<div class="browse-head">
+    <h1 class="page-title">Browse Teaching Activities</h1>
+    <form method="get" class="browse-search" role="search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <label for="q" class="sr-only">Search activities</label>
+        <input type="search" name="q" id="q" value="{{ request.GET.q }}" placeholder="Search activities…" autocomplete="off" enterkeyhint="search">
+        {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+        {% if request.GET.tag %}<input type="hidden" name="tag" value="{{ request.GET.tag }}">{% endif %}
+        {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
+        <button type="submit" class="btn">Search</button>
+    </form>
+    {% if not user.is_authenticated %}
+    <p class="auth-note">Preview and download on activity pages require a <strong>.edu</strong> sign-in. <a href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Log in</a> or <a href="{% url 'accounts:register' %}">register</a>.</p>
+    {% endif %}
 </div>
-{% endif %}
 
-<section class="filters-panel" aria-labelledby="filters-panel-title">
-    <div class="filters-panel-inner">
-        <header class="filters-header">
-            <div class="filters-header-main">
-                <div class="filters-header-icon" aria-hidden="true">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-                </div>
-                <div class="filters-header-text">
-                    <div class="filters-header-title-row">
-                        <h2 id="filters-panel-title" class="filters-heading">Find activities</h2>
-                        <p class="filters-caption">Search by keyword, or narrow results with category, tag, and sort. Leave fields blank to browse everything.</p>
-                    </div>
-                </div>
-            </div>
-            {% if has_active_filters %}
-            <a href="{% url 'activities:list' %}" class="filters-clear">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
-                Clear all filters
-            </a>
-            {% endif %}
-        </header>
-        <form method="get" class="filters-form">
-            <div class="filters-grid">
-                <div class="filters-field filters-field--search">
-                    <label for="q">
-                        <span class="lbl-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
-                        Search
-                    </label>
-                    <input type="search" name="q" id="q" value="{{ request.GET.q }}" placeholder="Title, description, tags…" autocomplete="off" enterkeyhint="search">
-                </div>
-                <div class="filters-field">
-                    <label for="category">
-                        <span class="lbl-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span>
-                        Category
-                    </label>
-                    <select name="category" id="category">
-                        <option value="">All categories</option>
-                        {% for category in categories %}
-                        <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="filters-field">
-                    <label for="tag">
-                        <span class="lbl-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></svg></span>
-                        Tag
-                    </label>
-                    <select name="tag" id="tag">
-                        <option value="">All tags</option>
-                        {% for tag in tags %}
-                        <option value="{{ tag.name }}" {% if request.GET.tag == tag.name %}selected{% endif %}>{{ tag.display_name }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
-                <div class="filters-field">
-                    <label for="sort">
-                        <span class="lbl-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg></span>
-                        Sort
-                    </label>
-                    <select name="sort" id="sort">
-                        <option value="-created_at" {% if request.GET.sort == "-created_at" or not request.GET.sort %}selected{% endif %}>Newest first</option>
-                        <option value="created_at" {% if request.GET.sort == "created_at" %}selected{% endif %}>Oldest first</option>
-                        <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Title A–Z</option>
-                        <option value="-title" {% if request.GET.sort == "-title" %}selected{% endif %}>Title Z–A</option>
-                    </select>
-                </div>
-            </div>
-            <div class="filters-footer">
-                <button type="submit" class="btn">Apply filters</button>
-                <p class="filters-hint">Updates the list below. Press <kbd>Enter</kbd> in the search box to apply quickly.</p>
-            </div>
-        </form>
-    </div>
-</section>
+<div class="browse">
+    <button type="button" class="filters-toggle" aria-expanded="false" aria-controls="browse-side">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+        Filters
+        {% if active_category or active_filtered_tag %}<span class="count">{% if active_category and active_filtered_tag %}2{% else %}1{% endif %}</span>{% endif %}
+    </button>
 
-<p class="results-count">{{ total }} activit{{ total|pluralize:"y,ies" }} found</p>
-
-{% if active_filtered_tag %}
-<div class="tag-filter-banner" role="status">
-    Showing activities tagged <strong>{{ active_filtered_tag.display_name }}</strong>.
-    <a href="{{ clear_tag_url }}" class="tag-filter-remove">Remove tag filter</a>
-</div>
-{% endif %}
-
-{% if activity_rows %}
-<div class="activity-grid">
-    {% for row in activity_rows %}
-    {% with activity=row.activity %}
-    <article class="activity-card" style="--card-i: {{ forloop.counter0 }}">
-        <a href="{% url 'activities:detail' activity.slug %}" class="card-media"
-           data-lightbox
-           data-title="{{ activity.title }}"
-           data-category="{% if activity.category %}{{ activity.category }}{% endif %}"
-           data-desc="{{ activity.description|truncatewords:60 }}"
-           data-img="{{ row.tile_image }}"
-           data-detail="{% url 'activities:detail' activity.slug %}"
-           {% if row.preview %}data-preview="{{ row.preview.open_url }}" data-preview-kind="{{ row.preview.kind }}"{% endif %}
-           aria-label="Preview activity: {{ activity.title }}">
-            <img src="{{ row.tile_image }}" alt="" loading="lazy" decoding="async" width="800" height="600" fetchpriority="low">
-            <span class="card-media-zoom" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg>
-            </span>
-        </a>
-        <div class="card-body">
-            <h2><a href="{% url 'activities:detail' activity.slug %}">{{ activity.title }}</a></h2>
-            {% if activity.category %}
-            <p class="activity-meta"><span class="category">{{ activity.category }}</span></p>
-            {% endif %}
-            {% if activity.description %}
-            <p class="card-desc">{{ activity.description|truncatewords:36 }}</p>
-            {% endif %}
-            {% if activity.tags.all %}
-            <div class="tags">
-                {% for tag in activity.tags.all %}
-                <a href="{% if active_tag_name and tag.name|lower == active_tag_name %}{{ clear_tag_url }}{% else %}{% url 'activities:list' %}?{{ tag_apply_queries|get_item:tag.name }}{% endif %}" class="tag tag-chip{% if active_tag_name and tag.name|lower == active_tag_name %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}; position: relative; z-index: 1;" {% if active_tag_name and tag.name|lower == active_tag_name %}aria-label="Remove tag filter {{ tag.display_name }}"{% else %}aria-label="Show activities tagged {{ tag.display_name }}"{% endif %}>{{ tag.display_name }}{% if active_tag_name and tag.name|lower == active_tag_name %} <span class="tag-chip-remove" aria-hidden="true">&times;</span>{% endif %}</a>
+    <aside class="browse-side" id="browse-side" aria-label="Filters">
+        <section class="side-group">
+            <h2>Category</h2>
+            <ul class="cat-list">
+                <li><a href="{{ category_all_url }}" {% if not active_category %}aria-current="true"{% endif %}>All categories <span class="n">{{ category_all_count }}</span></a></li>
+                {% for c in category_facets %}{% if c.count or c.active %}
+                <li><a href="{{ c.url }}" {% if c.active %}aria-current="true"{% endif %}>{{ c.name }} <span class="n">{{ c.count }}</span></a></li>
+                {% endif %}{% endfor %}
+            </ul>
+        </section>
+        {% if tag_facets %}
+        <section class="side-group">
+            <h2>Tags</h2>
+            <div class="side-tags">
+                {% for t in tag_facets %}
+                <a href="{{ t.url }}" class="tag tag-chip{% if t.active %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}" {% if t.active %}aria-current="true" aria-label="Remove tag filter {{ t.display_name }}"{% endif %}>{{ t.display_name }}<span class="n">{{ t.count }}</span>{% if t.active %} <span class="tag-chip-remove" aria-hidden="true">&times;</span>{% endif %}</a>
                 {% endfor %}
             </div>
-            {% endif %}
-            <p class="card-actions"><a href="{% url 'activities:detail' activity.slug %}" class="btn btn-outline">View details →</a></p>
+        </section>
+        {% endif %}
+    </aside>
+
+    <section class="browse-results" aria-label="Results">
+        <div class="results-bar">
+            <p class="results-count" role="status">{{ total }} activit{{ total|pluralize:"y,ies" }}</p>
+            <form method="get" class="sort-form">
+                {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+                {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
+                {% if request.GET.tag %}<input type="hidden" name="tag" value="{{ request.GET.tag }}">{% endif %}
+                <label for="sort">Sort</label>
+                <select name="sort" id="sort">
+                    <option value="-created_at" {% if request.GET.sort == "-created_at" or not request.GET.sort %}selected{% endif %}>Newest first</option>
+                    <option value="created_at" {% if request.GET.sort == "created_at" %}selected{% endif %}>Oldest first</option>
+                    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Title A–Z</option>
+                    <option value="-title" {% if request.GET.sort == "-title" %}selected{% endif %}>Title Z–A</option>
+                </select>
+                <noscript><button type="submit" class="btn btn-outline">Apply</button></noscript>
+            </form>
         </div>
-    </article>
-    {% endwith %}
-    {% endfor %}
-</div>
 
-{% if page_obj.has_other_pages %}
-<nav class="pagination">
-    {% if page_obj.has_previous %}
-    <a href="?{{ pagination_base }}{% if pagination_base %}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>
-    {% endif %}
-    <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}
-    <a href="?{{ pagination_base }}{% if pagination_base %}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>
-    {% endif %}
-</nav>
-{% endif %}
+        {% if request.GET.q or active_category or active_filtered_tag %}
+        <div class="active-filters">
+            {% if request.GET.q %}<a class="active-chip" href="{{ remove_q_url }}" aria-label="Remove search {{ request.GET.q }}">“{{ request.GET.q }}” <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
+            {% if active_category %}<a class="active-chip" href="{{ remove_category_url }}" aria-label="Remove category filter {{ active_category.name }}">{{ active_category.name }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
+            {% if active_filtered_tag %}<a class="active-chip" href="{{ clear_tag_url }}" aria-label="Remove tag filter {{ active_filtered_tag.display_name }}">{{ active_filtered_tag.display_name }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
+            <a class="clear-all" href="{% url 'activities:list' %}">Clear all</a>
+        </div>
+        {% endif %}
 
-{% else %}
-<div class="empty-state">
-    <p>No activities found. Try adjusting your search or filters.</p>
+        {% if activity_rows %}
+        <div class="activity-grid">
+            {% for row in activity_rows %}
+            {% with activity=row.activity %}
+            <article class="act-card" style="--card-i: {{ forloop.counter0 }}">
+                <a href="{% url 'activities:detail' activity.slug %}" class="card-media"
+                   data-lightbox
+                   data-title="{{ activity.title }}"
+                   data-category="{% if activity.category %}{{ activity.category }}{% endif %}"
+                   data-desc="{{ row.description|truncatewords:60 }}"
+                   data-img="{{ row.tile_image }}"
+                   data-detail="{% url 'activities:detail' activity.slug %}"
+                   {% if row.preview %}data-preview="{{ row.preview.open_url }}" data-preview-kind="{{ row.preview.kind }}"{% endif %}
+                   aria-label="Preview activity: {{ activity.title }}">
+                    <img src="{{ row.tile_image }}" alt="" loading="lazy" decoding="async" width="800" height="450" fetchpriority="low">
+                    {% if activity.category %}<span class="card-pill">{{ activity.category }}</span>{% endif %}
+                    {% if row.duration %}<span class="card-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ row.duration }}</span>{% endif %}
+                    <span class="card-media-zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg></span>
+                </a>
+                <div class="act-body">
+                    <h2><a href="{% url 'activities:detail' activity.slug %}">{{ activity.title }}</a></h2>
+                    {% if row.description %}<p class="act-desc">{{ row.description }}</p>{% endif %}
+                    {% if row.tags_shown %}
+                    <div class="act-tags">
+                        {% for tag in row.tags_shown %}
+                        <a href="{% if active_tag_name and tag.name|lower == active_tag_name %}{{ clear_tag_url }}{% else %}{% url 'activities:list' %}?{{ tag_apply_queries|get_item:tag.name }}{% endif %}" class="tag tag-chip{% if active_tag_name and tag.name|lower == active_tag_name %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}" {% if active_tag_name and tag.name|lower == active_tag_name %}aria-label="Remove tag filter {{ tag.display_name }}"{% else %}aria-label="Show activities tagged {{ tag.display_name }}"{% endif %}>{{ tag.display_name }}</a>
+                        {% endfor %}
+                        {% if row.tags_more %}<span class="tag-more">+{{ row.tags_more }}</span>{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </article>
+            {% endwith %}
+            {% endfor %}
+        </div>
+
+        {% if page_obj.has_other_pages %}
+        <nav class="pagination" aria-label="Pages">
+            {% if page_obj.has_previous %}
+            <a href="?{{ pagination_base }}{% if pagination_base %}&{% endif %}page={{ page_obj.previous_page_number }}">← Previous</a>
+            {% endif %}
+            <span class="current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+            <a href="?{{ pagination_base }}{% if pagination_base %}&{% endif %}page={{ page_obj.next_page_number }}">Next →</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state">
+            {% include "partials/mascot.html" %}
+            <p>No activities found. Try adjusting your search or filters.</p>
+            <a href="{% url 'activities:list' %}" class="btn btn-outline">Clear all filters</a>
+        </div>
+        {% endif %}
+    </section>
 </div>
-{% endif %}
 
 <div class="lightbox" id="activity-lightbox" hidden>
     <div class="lightbox-backdrop" data-close></div>
@@ -810,10 +391,25 @@
             el.addEventListener('click', function (e) { e.preventDefault(); openLb(el); });
         });
         lb.addEventListener('click', function (e) {
-            if (e.target.hasAttribute('data-close')) closeLb();
+            // closest(): clicks on the X icon's <svg>/<path> should count as the close button
+            if (e.target.closest('[data-close]')) closeLb();
         });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && !lb.hidden) closeLb();
+        });
+    })();
+
+    // Browse filters: auto-apply sort, and the phone "Filters" toggle for the sidebar.
+    (function () {
+        var sort = document.getElementById('sort');
+        if (sort) sort.addEventListener('change', function () { sort.form.submit(); });
+        var layout = document.querySelector('.browse');
+        var toggle = document.querySelector('.filters-toggle');
+        if (!layout || !toggle) return;
+        layout.classList.add('js-filters');
+        toggle.addEventListener('click', function () {
+            var open = layout.classList.toggle('filters-open');
+            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
         });
     })();
 </script>

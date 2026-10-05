@@ -1,12 +1,13 @@
 import mimetypes
 import os
+import re
 from urllib.parse import quote, urlencode
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMessage
-from django.db.models import Q
+from django.db.models import Count, Q
 from django.core.paginator import Paginator
 from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
@@ -15,7 +16,7 @@ from django.views.decorators.http import require_GET, require_http_methods
 
 from config.error_handlers import json_error_response
 from .forms import ContactForm
-from .models import Activity, Category, Material, Tag
+from .models import Activity, ActivityTag, Category, Material, Tag
 from .tile_images import tile_image_url
 
 
@@ -269,8 +270,8 @@ def consulting(request):
     return render(request, "consulting.html")
 
 
-def _get_filtered_queryset(request):
-    """Build filtered activity queryset from request params."""
+def _get_filtered_queryset(request, ignore=()):
+    """Build filtered activity queryset from request params (skip any names in `ignore`)."""
     qs = Activity.objects.select_related("category").prefetch_related("tags", "materials")
 
     q = request.GET.get("q", "").strip()
@@ -281,11 +282,11 @@ def _get_filtered_queryset(request):
             | Q(tags__name__icontains=q)
         ).distinct()
 
-    tag_name = request.GET.get("tag", "").strip()
+    tag_name = "" if "tag" in ignore else request.GET.get("tag", "").strip()
     if tag_name:
         qs = qs.filter(tags__name__iexact=tag_name)
 
-    category_id = request.GET.get("category", "").strip()
+    category_id = "" if "category" in ignore else request.GET.get("category", "").strip()
     if category_id:
         try:
             qs = qs.filter(category_id=int(category_id))
@@ -299,6 +300,75 @@ def _get_filtered_queryset(request):
         qs = qs.order_by("-created_at")
 
     return qs, None
+
+
+# Seed/admin descriptions often end with a "Time: 90 Minutes" line; the list shows it as a badge.
+_DURATION_RE = re.compile(r"(?:^|\n)[ \t]*Time:[ \t]*(?P<duration>[^\n]+?)[ \t]*$", re.IGNORECASE)
+
+
+def _split_duration(description):
+    """Return (description without a trailing "Time: ..." line, duration text or "")."""
+    m = _DURATION_RE.search(description or "")
+    if not m:
+        return description or "", ""
+    return description[: m.start()].rstrip(), m.group("duration").strip()
+
+
+def _query_without(request, *drop, **set_values):
+    """Current query string minus `drop` keys (and page), with `set_values` applied."""
+    params = request.GET.copy()
+    params.pop("page", None)
+    for key in drop:
+        params.pop(key, None)
+    for key, value in set_values.items():
+        params[key] = value
+    query = params.urlencode()
+    return f"{reverse('activities:list')}?{query}" if query else reverse("activities:list")
+
+
+def _browse_facets(request):
+    """Sidebar counts: categories (respecting search + tag) and tags (respecting search + category)."""
+    cat_qs, _ = _get_filtered_queryset(request, ignore=("category",))
+    cat_ids = cat_qs.order_by().values("id")
+    counts = dict(
+        Activity.objects.filter(id__in=cat_ids).order_by().values_list("category_id").annotate(n=Count("id"))
+    )
+    active_cat = request.GET.get("category", "").strip()
+    categories = [
+        {
+            "id": c.id,
+            "name": c.name,
+            "count": counts.get(c.id, 0),
+            "active": active_cat == str(c.id),
+            "url": _query_without(request, "category") if active_cat == str(c.id) else _query_without(request, category=c.id),
+        }
+        for c in Category.objects.order_by("name")
+    ]
+    tag_qs, _ = _get_filtered_queryset(request, ignore=("tag",))
+    tag_counts = dict(
+        ActivityTag.objects.filter(activity_id__in=tag_qs.order_by().values("id"))
+        .order_by()
+        .values_list("tag_id")
+        .annotate(n=Count("activity_id", distinct=True))
+    )
+    active_tag = request.GET.get("tag", "").strip().lower()
+    tags = [
+        {
+            "name": t.name,
+            "display_name": t.display_name,
+            "count": tag_counts.get(t.id, 0),
+            "active": t.name.lower() == active_tag,
+            "url": _query_without(request, "tag") if t.name.lower() == active_tag else _query_without(request, tag=t.name),
+        }
+        for t in Tag.objects.order_by("name")
+        if tag_counts.get(t.id) or t.name.lower() == active_tag
+    ]
+    return {
+        "category_facets": categories,
+        "category_all_count": len(set(cat_ids.values_list("id", flat=True))),
+        "category_all_url": _query_without(request, "category"),
+        "tag_facets": tags,
+    }
 
 
 def _first_previewable(activity, request):
@@ -378,14 +448,24 @@ def activity_list(request):
                 and request.GET.get("sort") != "-created_at"
             )
         )
-        activity_rows = [
-            {
-                "activity": a,
-                "tile_image": tile_image_url(a),
-                "preview": _first_previewable(a, request),
-            }
-            for a in page_obj.object_list
-        ]
+        activity_rows = []
+        for a in page_obj.object_list:
+            body, duration = _split_duration(a.description)
+            tags_list = list(a.tags.all())
+            activity_rows.append(
+                {
+                    "activity": a,
+                    "tile_image": tile_image_url(a),
+                    "preview": _first_previewable(a, request),
+                    "description": body,
+                    "duration": duration,
+                    "tags_shown": tags_list[:3],
+                    "tags_more": max(0, len(tags_list) - 3),
+                }
+            )
+        active_category = next(
+            (c for c in categories if str(c["id"]) == request.GET.get("category", "").strip()), None
+        )
         return render(
             request,
             "activities/activity_list.html",
@@ -401,6 +481,10 @@ def activity_list(request):
                 "active_filtered_tag": active_filtered_tag,
                 "has_active_filters": has_active_filters,
                 "categories": categories,
+                "active_category": active_category,
+                "remove_q_url": _query_without(request, "q"),
+                "remove_category_url": _query_without(request, "category"),
+                **_browse_facets(request),
                 "pagination_base": pagination_base,
             },
         )
