@@ -26,11 +26,11 @@
     .browse { display: grid; gap: 1.5rem; align-items: start; }
     @media (min-width: 900px) {
         .browse { grid-template-columns: 260px minmax(0, 1fr); gap: 2rem; }
-        .browse-side { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); max-height: calc(100vh - var(--header-h, 61px) - 2.5rem); overflow: auto; }
+        .browse-side { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); max-height: calc(100vh - var(--header-h, 61px) - 2.5rem); overflow: auto; padding-right: 1.5rem; border-right: 1px solid rgba(13, 45, 76, 0.14); }
     }
     .side-form { display: grid; gap: 0.6rem; }
     .side-title { margin: 0 0 0.2rem; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--su-orange-dark); }
-    .results-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 1rem; }
+    .results-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 1.25rem; padding-bottom: 0.9rem; border-bottom: 1px solid rgba(13, 45, 76, 0.14); }
     .results-count { margin: 0; font-weight: 700; color: var(--su-navy); }
     .sort-form { display: flex; align-items: center; gap: 0.5rem; }
     .sort-label { font-size: 0.9rem; color: #55677a; }
@@ -46,16 +46,17 @@
     .ms-head .ms-count { margin-left: auto; }
     .ms-count { min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 999px; background: var(--su-orange); color: #fff; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; }
     .ms-panel {
-        background: #fff; border-radius: 12px; border: 1px solid rgba(13, 45, 76, 0.12);
+        background: #fff; border-radius: 12px; border: 1px solid rgba(13, 45, 76, 0.18);
         box-shadow: 0 14px 30px -22px rgba(13, 45, 76, 0.5); padding: 0.6rem;
     }
     .ms-filter {
         width: 100%; margin: 0 0 0.4rem; padding: 0.5rem 0.7rem; border-radius: 9px; border: 1.5px solid rgba(13, 45, 76, 0.14); font: inherit; font-size: 0.92rem;
     }
     .ms-filter:focus { outline: none; border-color: var(--su-orange); }
-    .ms-options { max-height: 280px; overflow: auto; display: grid; gap: 1px; }
+    .ms-options { max-height: 280px; overflow: auto; display: grid; }
     .ms-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.6rem; padding: 0.45rem 0.55rem; border-radius: 8px; cursor: pointer; font-size: 0.93rem; color: var(--su-navy); }
     .ms-opt:hover { background: #f3f6f9; }
+    .ms-opt + .ms-opt { border-top: 1px solid #eef2f7; border-radius: 0; }
     .ms-opt input { width: 1.05rem; height: 1.05rem; accent-color: var(--su-orange); margin: 0; }
     .ms-opt .n { font-size: 0.75rem; font-weight: 700; color: #6b7c8d; background: #eef2f7; border-radius: 999px; padding: 0.05rem 0.45rem; }
     .ms-opt[hidden] { display: none; }
@@ -78,13 +79,19 @@
     .activity-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
     .act-card {
         position: relative; display: flex; flex-direction: column; overflow: hidden;
-        background: #fff; border-radius: 18px; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card);
+        background: #fff; border-radius: 18px; border: 1px solid rgba(13, 45, 76, 0.16); box-shadow: var(--shadow-card);
         transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease;
         animation: card-in 0.5s calc(var(--card-i, 0) * 0.05s) var(--ease-out) backwards;
     }
     .act-card:hover { transform: translateY(-4px); border-color: rgba(247, 105, 0, 0.3); box-shadow: 0 26px 56px -28px rgba(13, 45, 76, 0.55); }
     @keyframes card-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-    .card-media { position: relative; z-index: 2; display: block; aspect-ratio: 16 / 9; overflow: hidden; background: #e3e8ef; }
+    .card-media {
+        position: relative; z-index: 2; display: block; aspect-ratio: 16 / 9; overflow: hidden;
+        border-bottom: 1px solid rgba(13, 45, 76, 0.12);
+        /* fallback if the cover photo fails to load */
+        background: radial-gradient(90% 120% at 100% 0%, rgba(247, 105, 0, 0.35), transparent 60%), linear-gradient(135deg, #1c4b78, var(--su-navy));
+    }
+    .card-media img.img-failed { visibility: hidden; }
     .card-media img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s var(--ease-out); }
     .act-card:hover .card-media img { transform: scale(1.04); }
     .card-pill {
@@ -270,7 +277,7 @@
                    data-detail="{% url 'activities:detail' activity.slug %}"
                    {% if row.preview %}data-preview="{{ row.preview.open_url }}" data-preview-kind="{{ row.preview.kind }}"{% endif %}
                    aria-label="Preview activity: {{ activity.title }}">
-                    <img src="{{ row.tile_image }}" alt="" loading="lazy" decoding="async" width="800" height="450" fetchpriority="low">
+                    <img src="{{ row.tile_image }}" alt="" loading="lazy" decoding="async" width="800" height="450" fetchpriority="low" onerror="this.classList.add('img-failed')">
                     {% if activity.category %}<span class="card-pill">{{ activity.category }}</span>{% endif %}
                     {% if row.duration %}<span class="card-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ row.duration }}</span>{% endif %}
                     <span class="card-media-zoom" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3M11 8v6M8 11h6"/></svg></span>

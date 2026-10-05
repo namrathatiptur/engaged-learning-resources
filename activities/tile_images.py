@@ -32,7 +32,7 @@ _IMAGE_CIVICS_SEMINAR = (
 
 _EDUCATION_IMAGES: List[str] = [
     "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=800&h=600&q=80",
-    "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=800&h=600&q=80",
+    "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?auto=format&fit=crop&w=800&h=600&q=80",
     "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&h=600&q=80",
     "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=800&h=600&q=80",
     "https://images.unsplash.com/photo-1529390079861-591de354faf5?auto=format&fit=crop&w=800&h=600&q=80",
