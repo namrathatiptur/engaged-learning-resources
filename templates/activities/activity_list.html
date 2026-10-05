@@ -42,20 +42,11 @@
     }
     #sort:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18); }
     .ms { position: relative; }
-    .ms > summary {
-        list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none;
-        padding: 0.5rem 0.85rem; border-radius: 10px; border: 1.5px solid rgba(13, 45, 76, 0.14); background: #fff;
-        font-weight: 600; color: var(--su-navy);
-    }
-    .ms > summary::-webkit-details-marker { display: none; }
-    .ms > summary:focus-visible { outline: 2px solid var(--su-orange); outline-offset: 2px; }
-    .ms[open] > summary, .ms > summary:hover { border-color: var(--su-orange); }
-    .ms-chev { width: 1rem; height: 1rem; transition: transform 0.2s ease; }
-    .ms[open] .ms-chev { transform: rotate(180deg); }
+    .ms-head { display: flex; align-items: center; gap: 0.5rem; margin: 0 0 0.45rem; font-size: 0.95rem; font-weight: 700; color: var(--su-navy); }
+    .ms-head .ms-count { margin-left: auto; }
     .ms-count { min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 999px; background: var(--su-orange); color: #fff; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; }
-    .ms > summary .ms-count { margin-left: auto; }
     .ms-panel {
-        margin-top: 6px; background: #fff; border-radius: 12px; border: 1px solid rgba(13, 45, 76, 0.12);
+        background: #fff; border-radius: 12px; border: 1px solid rgba(13, 45, 76, 0.12);
         box-shadow: 0 14px 30px -22px rgba(13, 45, 76, 0.5); padding: 0.6rem;
     }
     .ms-filter {
@@ -201,8 +192,8 @@
         {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
         {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
         <h2 class="side-title">Filters</h2>
-            <details class="ms" data-ms>
-                <summary>Category{% if category_selected %}<span class="ms-count">{{ category_selected|length }}</span>{% endif %}<svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+            <section class="ms" data-ms>
+                <h3 class="ms-head">Category{% if category_selected %}<span class="ms-count">{{ category_selected|length }}</span>{% endif %}</h3>
                 <div class="ms-panel">
                     {% if category_facets|length > 8 %}<input type="search" class="ms-filter" placeholder="Filter categories…" aria-label="Filter categories…" autocomplete="off">{% endif %}
                     <div class="ms-options">
@@ -218,9 +209,9 @@
                         <button type="submit" class="btn">Apply</button>
                     </div>
                 </div>
-            </details>
-            <details class="ms" data-ms>
-                <summary>Tags{% if tag_selected %}<span class="ms-count">{{ tag_selected|length }}</span>{% endif %}<svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+            </section>
+            <section class="ms" data-ms>
+                <h3 class="ms-head">Tags{% if tag_selected %}<span class="ms-count">{{ tag_selected|length }}</span>{% endif %}</h3>
                 <div class="ms-panel">
                     {% if tag_facets|length > 8 %}<input type="search" class="ms-filter" placeholder="Filter tags…" aria-label="Filter tags…" autocomplete="off">{% endif %}
                     <div class="ms-options">
@@ -236,7 +227,7 @@
                         <button type="submit" class="btn">Apply</button>
                     </div>
                 </div>
-            </details>
+            </section>
     </form>
 </aside>
 
@@ -419,16 +410,12 @@
         });
     })();
 
-    // Browse filters: auto-apply sort; sidebar multi-select dropdowns (filter box, clear, Esc closes).
+    // Browse filters: auto-apply sort; always-open sidebar multi-select lists (filter box, clear).
     (function () {
         var sort = document.getElementById('sort');
         if (sort) sort.addEventListener('change', function () { sort.form.submit(); });
         var menus = Array.prototype.slice.call(document.querySelectorAll('[data-ms]'));
         menus.forEach(function (menu) {
-            menu.addEventListener('toggle', function () {
-                var box = menu.querySelector('.ms-filter');
-                if (menu.open && box) box.focus();
-            });
             var box = menu.querySelector('.ms-filter');
             if (box) {
                 box.addEventListener('input', function () {
@@ -444,10 +431,6 @@
             menu.querySelector('.ms-clear').addEventListener('click', function () {
                 menu.querySelectorAll('input[type="checkbox"]').forEach(function (c) { c.checked = false; });
             });
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key !== 'Escape') return;
-            menus.forEach(function (menu) { if (menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
         });
     })();
 </script>
