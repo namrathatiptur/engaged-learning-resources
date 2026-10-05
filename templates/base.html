@@ -149,6 +149,41 @@
             vertical-align: -0.08em; margin-left: 0.25rem;
             filter: drop-shadow(0 2px 6px rgba(247, 105, 0, 0.35));
         }
+        /* ---------- Mascot (templates/partials/mascot.html) ---------- */
+        .logo-mascot { display: inline-flex; width: 1.55em; height: 1.43em; margin-left: 0.2rem; vertical-align: -0.28em; cursor: pointer; }
+        .logo-mascot--footer { width: 1.4em; height: 1.3em; cursor: default; }
+        .mascot { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 3px 6px rgba(247, 105, 0, 0.35)); }
+        /* On navy header/footer, outline the navy cap and limbs so the silhouette stays readable */
+        .header .mascot .m-cap path:first-child, .footer .mascot .m-cap path:first-child, .home-hero .mascot .m-cap path:first-child,
+        .header .mascot .m-limbs path, .footer .mascot .m-limbs path, .home-hero .mascot .m-limbs path { stroke: #e9f0ff; stroke-width: 1.6; paint-order: stroke; stroke-linejoin: round; }
+        .mascot .m-pupils { transition: transform 0.12s ease-out; }
+        .mascot .m-eyes { transform-box: fill-box; transform-origin: center; animation: m-blink 5.5s infinite; }
+        @keyframes m-blink { 0%, 94%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+        .logo:hover .mascot, .mascot--wiggle { animation: m-wiggle 0.6s ease-in-out; transform-origin: 50% 90%; }
+        @keyframes m-wiggle { 0%, 100% { transform: rotate(0); } 25% { transform: rotate(-12deg); } 50% { transform: rotate(10deg); } 75% { transform: rotate(-6deg); } }
+        .mascot .m-slice { opacity: 0; transition: opacity 0.3s ease; }
+        .mascot .m-peel, .mascot .m-cap, .mascot .m-face { transition: transform 0.55s cubic-bezier(.2,.8,.2,1), opacity 0.4s ease; transform-box: fill-box; }
+        .mascot .m-peel-l { transform-origin: 100% 100%; }
+        .mascot .m-peel-r { transform-origin: 0% 100%; }
+        .mascot.is-peeled .m-slice { opacity: 1; }
+        .mascot.is-peeled .m-peel-l { transform: rotate(-38deg) translateX(-6px); opacity: 0.9; }
+        .mascot.is-peeled .m-peel-r { transform: rotate(38deg) translateX(6px); opacity: 0.9; }
+        .mascot.is-peeled .m-face { opacity: 0; }
+        .mascot.is-peeled .m-cap { transform: translateY(-9px) rotate(-14deg); }
+        /* Konami code easter egg */
+        .orange-rain { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+        .orange-rain span { position: absolute; top: -3rem; font-size: 2rem; animation: orange-fall linear forwards; }
+        @keyframes orange-fall { to { transform: translateY(110vh) rotate(var(--spin, 360deg)); } }
+        .peel-toast {
+            position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%, 1rem); opacity: 0; z-index: 9999;
+            padding: 0.6rem 1rem; border-radius: 999px; background: var(--su-navy); color: #fff; font-weight: 600; font-size: 0.9rem;
+            box-shadow: 0 14px 30px -14px rgba(6, 20, 36, 0.8); transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        .peel-toast.show { opacity: 1; transform: translate(-50%, 0); }
+        @media (prefers-reduced-motion: reduce) {
+            .mascot .m-eyes, .logo:hover .mascot, .mascot--wiggle { animation: none; }
+            .orange-rain { display: none; }
+        }
         /* Brand image mark (used when an official logo asset is present) */
         .brand-mark { height: 1.2em; width: auto; vertical-align: -0.2em; margin-left: 0.25rem; }
         .nav { display: flex; align-items: center; gap: 1.4rem; }
@@ -517,6 +552,11 @@
             background: #fff;
         }
         a.tag.tag-chip { text-decoration: none; color: var(--su-navy); cursor: pointer; }
+        /* Sticker-style tilt (separate `rotate` property so it doesn't fight the enter/hover transforms) */
+        .tag.tag-chip { rotate: -1.5deg; transition: transform 0.22s var(--ease-out), rotate 0.22s var(--ease-out), box-shadow 0.22s ease, border-color 0.22s ease, background 0.22s ease, color 0.2s ease; }
+        .tag.tag-chip:nth-child(even) { rotate: 2deg; }
+        .tag.tag-chip:nth-child(3n) { rotate: -0.5deg; }
+        .tag.tag-chip:hover, .tag.tag-chip:focus-visible { rotate: 0deg; }
         a.tag.tag-chip:focus-visible { outline: 2px solid var(--su-orange); outline-offset: 2px; }
         .tag.tag-chip.tag-chip--filter-active {
             border-color: rgba(247, 105, 0, 0.6);
@@ -601,7 +641,7 @@
     <a class="skip-link" href="#main-content">Skip to content</a>
     <header class="header" id="site-header">
         <div class="header-inner">
-            <a href="{% url 'home' %}" class="logo"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span><span class="logo-emoji" aria-hidden="true">🍊</span></a>
+            <a href="{% url 'home' %}" class="logo"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span><span class="logo-mascot" data-peel title="Hi!">{% include "partials/mascot.html" %}</span></a>
             <button type="button" class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="site-nav">
                 <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
                 <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
@@ -658,7 +698,7 @@
     <footer class="footer">
         <div class="footer-inner">
             <div class="footer-brand">
-                <a href="{% url 'home' %}" class="footer-brand-logo"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span><span class="logo-emoji" aria-hidden="true">🍊</span></a>
+                <a href="{% url 'home' %}" class="footer-brand-logo"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span><span class="logo-mascot logo-mascot--footer">{% include "partials/mascot.html" %}</span></a>
                 <p class="footer-tagline">Teaching resources for instructors</p>
             </div>
             <nav class="footer-col" aria-label="Explore">
@@ -785,6 +825,76 @@
             }
             setHeaderHeight();
             window.addEventListener('resize', setHeaderHeight);
+        })();
+    </script>
+    <script>
+        // Mascot: eyes follow the cursor; 5 quick clicks peel it; the Konami code rains oranges.
+        (function() {
+            var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            var mascots = Array.prototype.slice.call(document.querySelectorAll('.mascot'));
+            if (!mascots.length) return;
+            var pending = false, mx = 0, my = 0;
+            function look() {
+                pending = false;
+                mascots.forEach(function(svg) {
+                    var box = svg.getBoundingClientRect();
+                    if (!box.width || box.bottom < 0 || box.top > innerHeight) return;
+                    var dx = mx - (box.left + box.width / 2), dy = my - (box.top + box.height / 2);
+                    var dist = Math.sqrt(dx * dx + dy * dy) || 1, reach = Math.min(1.8, dist / 40);
+                    svg.querySelector('.m-pupils').setAttribute('transform', 'translate(' + (dx / dist * reach).toFixed(2) + ' ' + (dy / dist * reach).toFixed(2) + ')');
+                });
+            }
+            if (!reduce) {
+                document.addEventListener('mousemove', function(e) {
+                    mx = e.clientX; my = e.clientY;
+                    if (!pending) { pending = true; requestAnimationFrame(look); }
+                }, { passive: true });
+            }
+            function toast(text) {
+                var t = document.createElement('div');
+                t.className = 'peel-toast'; t.setAttribute('role', 'status'); t.textContent = text;
+                document.body.appendChild(t);
+                requestAnimationFrame(function() { t.classList.add('show'); });
+                setTimeout(function() { t.classList.remove('show'); setTimeout(function() { t.remove(); }, 300); }, 1800);
+            }
+            // Clicking the header mascot wiggles it instead of navigating (the wordmark still links home).
+            var clicks = 0, timer = null;
+            document.querySelectorAll('[data-peel]').forEach(function(el) {
+                el.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    var svg = el.querySelector('.mascot');
+                    svg.classList.remove('mascot--wiggle'); void svg.offsetWidth; svg.classList.add('mascot--wiggle');
+                    clicks += 1; clearTimeout(timer);
+                    timer = setTimeout(function() { clicks = 0; }, 1500);
+                    if (clicks >= 5) {
+                        clicks = 0;
+                        svg.classList.add('is-peeled');
+                        toast('🍊 Freshly peeled!');
+                        setTimeout(function() { svg.classList.remove('is-peeled'); }, 2200);
+                    }
+                });
+            });
+            var code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'], pos = 0;
+            document.addEventListener('keydown', function(e) {
+                var key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+                pos = key === code[pos] ? pos + 1 : (key === code[0] ? 1 : 0);
+                if (pos < code.length) return;
+                pos = 0;
+                if (reduce) { toast('🍊🍊🍊'); return; }
+                var rain = document.createElement('div');
+                rain.className = 'orange-rain'; rain.setAttribute('aria-hidden', 'true');
+                for (var i = 0; i < 40; i++) {
+                    var o = document.createElement('span');
+                    o.textContent = Math.random() < 0.15 ? '🍋' : '🍊';
+                    o.style.left = (Math.random() * 100) + 'vw';
+                    o.style.animationDuration = (2 + Math.random() * 2.2) + 's';
+                    o.style.animationDelay = (Math.random() * 1.2) + 's';
+                    o.style.setProperty('--spin', (Math.random() * 720 - 360) + 'deg');
+                    rain.appendChild(o);
+                }
+                document.body.appendChild(rain);
+                setTimeout(function() { rain.remove(); }, 5000);
+            });
         })();
     </script>
     {% block extra_js %}{% endblock %}

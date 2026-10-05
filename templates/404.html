@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Page not found{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nf { max-width: 720px; margin: 1rem auto 3rem; text-align: center; }
+    .nf-stage { position: relative; width: 260px; height: 230px; margin: 0 auto 1.25rem; }
+    .nf-stage .mascot { position: absolute; left: 50%; bottom: 0; width: 150px; height: 139px; margin-left: -75px; animation: nf-bob 1.4s ease-in-out infinite; transform-origin: 50% 100%; }
+    .nf-ball {
+        position: absolute; left: 50%; bottom: 96px; width: 34px; height: 34px; margin-left: -17px; border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #ffb45e, #f76900 60%, #d95300);
+        box-shadow: inset -3px -4px 0 rgba(0, 0, 0, 0.08);
+        offset-path: path("M -70 0 Q 0 -190 70 0 Q 0 -120 -70 0");
+        offset-rotate: 0deg;
+        animation: nf-juggle 2.1s linear infinite;
+    }
+    .nf-ball::before { content: ""; position: absolute; top: -5px; left: 15px; width: 9px; height: 6px; border-radius: 6px 0; background: #3fae5a; }
+    .nf-ball:nth-of-type(2) { animation-delay: -0.7s; }
+    .nf-ball:nth-of-type(3) { animation-delay: -1.4s; }
+    @keyframes nf-juggle { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+    @keyframes nf-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px) rotate(-2deg); } }
+    .nf-code {
+        display: inline-block; margin-bottom: 0.6rem; padding: 0.3rem 0.75rem; border-radius: 999px;
+        font-family: var(--font-mono); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em;
+        color: var(--su-orange-dark); background: rgba(247, 105, 0, 0.1);
+    }
+    .nf h1 { font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.6rem); color: var(--su-navy); margin: 0 0 0.6rem; letter-spacing: -0.02em; }
+    .nf p { margin: 0 auto 1.6rem; max-width: 46ch; color: #46586b; font-size: 1.05rem; line-height: 1.6; }
+    .nf-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; }
+    @media (prefers-reduced-motion: reduce) {
+        .nf-ball, .nf-stage .mascot { animation: none; }
+        .nf-ball { offset-distance: 30%; }
+        .nf-ball:nth-of-type(2) { offset-distance: 50%; }
+        .nf-ball:nth-of-type(3) { offset-distance: 70%; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="nf">
+    <div class="nf-stage" aria-hidden="true">
+        <span class="nf-ball"></span><span class="nf-ball"></span><span class="nf-ball"></span>
+        {% include "partials/mascot.html" %}
+    </div>
+    <span class="nf-code">ERROR 404</span>
+    <h1>This page got squeezed.</h1>
+    <p>We juggled every link we have and couldn't find the page you were looking for. It may have moved, or the address might have a typo.</p>
+    <div class="nf-actions">
+        <a href="{% url 'home' %}" class="btn">Back to home</a>
+        <a href="{% url 'activities:list' %}" class="btn btn-outline">Browse activities</a>
+    </div>
+</div>
+{% endblock %}

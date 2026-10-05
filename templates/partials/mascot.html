@@ -1,0 +1,63 @@
+{% comment %}
+TeachOrange mascot, modeled on Syracuse's Otto the Orange (fuzzy orange, paneled cap, pointing arms).
+The Block S is left off the cap. Otto is a Syracuse University trademark, so get approval from
+SU Trademark Licensing before launch, or swap in the official asset via partials/brand_mark.html.
+Eyes follow the cursor, it blinks, and it peels open for the logo easter egg (see base.html).
+Usage: {% include "partials/mascot.html" with extra_class="mascot--hero" %}
+{% endcomment %}
+<svg class="mascot {{ extra_class }}" viewBox="0 0 80 74" aria-hidden="true" focusable="false">
+    <defs>
+        <radialGradient id="mascot-skin" cx="40%" cy="38%" r="70%">
+            <stop offset="0" stop-color="#FF8A3D"/>
+            <stop offset="0.6" stop-color="#F76900"/>
+            <stop offset="1" stop-color="#D95300"/>
+        </radialGradient>
+        <path id="mascot-fur" d="M62.6 41.0 L61.7 42.4 L62.0 43.9 L61.2 45.2 L62.0 46.9 L59.9 47.8 L61.3 49.8 L59.0 50.4 L59.4 52.2 L58.2 53.1 L57.7 54.6 L56.1 55.2 L56.2 57.2 L53.8 56.8 L54.0 59.2 L51.9 58.8 L51.1 60.3 L49.7 60.6 L48.6 61.7 L46.8 61.1 L46.0 63.3 L44.1 61.6 L43.0 63.6 L41.4 62.6 L40.0 63.2 L38.6 62.7 L37.1 63.4 L35.9 61.7 L34.0 63.3 L33.2 61.0 L31.4 61.9 L30.4 60.5 L28.9 60.2 L28.0 59.0 L26.1 59.1 L26.2 56.8 L23.7 57.3 L24.0 55.0 L22.2 54.6 L21.8 53.1 L20.7 52.1 L20.8 50.5 L18.8 49.8 L20.2 47.7 L17.9 46.9 L18.9 45.2 L17.9 43.9 L18.2 42.4 L17.5 41.0 L18.8 39.6 L17.1 38.0 L19.4 36.9 L18.0 35.1 L19.5 34.0 L19.5 32.5 L20.5 31.4 L20.4 29.7 L22.5 29.3 L21.7 26.9 L24.1 27.1 L24.1 25.1 L25.6 24.6 L26.5 23.4 L28.0 23.1 L28.6 21.2 L30.7 22.2 L31.2 19.7 L33.1 20.8 L34.2 19.4 L35.7 19.6 L37.1 18.9 L38.6 19.7 L40.0 18.0 L41.4 20.1 L43.0 18.3 L44.2 19.9 L45.8 19.5 L47.0 20.3 L48.6 20.2 L49.4 22.0 L51.5 21.0 L51.7 23.5 L53.8 23.0 L54.3 24.7 L55.7 25.3 L56.3 26.7 L58.0 27.2 L57.5 29.3 L60.0 29.5 L59.0 31.6 L60.8 32.4 L60.7 34.0 L61.5 35.2 L61.1 36.8 L62.7 38.0 L60.9 39.6Z"/>
+        <clipPath id="mascot-left"><rect x="0" y="0" width="40" height="74"/></clipPath>
+        <clipPath id="mascot-right"><rect x="40" y="0" width="40" height="74"/></clipPath>
+    </defs>
+    <!-- legs and arms (navy, like Otto's outfit) -->
+    <g class="m-limbs" fill="#0E1A4F">
+        <path d="M33 58l-1.5 9h-4.5q-3 0-3 2.6h11.5l1-11.6z"/>
+        <path d="M47 58l1.5 9h4.5q3 0 3 2.6H44.5l-1-11.6z"/>
+        <path class="m-arm-l" d="M21 45q-6-1-9.5-4.5l-1.4-1.6q-1.8-.6-5.6-.2-1.3.3-1 1.3l4 .4q-2.8 1.6-2.4 3.6.5 2 3.4 1.5 2.6 3.1 7 4.5 3.4 1 6.2-.4z"/>
+        <path class="m-arm-r" d="M59 45q6-1 9.5-4.5l1.4-1.6q1.8-.6 5.6-.2 1.3.3 1 1.3l-4 .4q2.8 1.6 2.4 3.6-.5 2-3.4 1.5-2.6 3.1-7 4.5-3.4 1-6.2-.4z"/>
+    </g>
+    <!-- revealed when peeled -->
+    <g class="m-slice">
+        <circle cx="40" cy="41" r="21" fill="#FFF3E2"/>
+        <circle cx="40" cy="41" r="18" fill="#FFC77A"/>
+        <g stroke="#FFF3E2" stroke-width="1.5" stroke-linecap="round">
+            <path d="M40 41v-18"/><path d="M40 41l12.7-12.7"/><path d="M40 41h18"/><path d="M40 41l12.7 12.7"/>
+            <path d="M40 41v18"/><path d="M40 41l-12.7 12.7"/><path d="M40 41h-18"/><path d="M40 41l-12.7-12.7"/>
+        </g>
+    </g>
+    <use class="m-peel m-peel-l" href="#mascot-fur" fill="url(#mascot-skin)" clip-path="url(#mascot-left)"/>
+    <use class="m-peel m-peel-r" href="#mascot-fur" fill="url(#mascot-skin)" clip-path="url(#mascot-right)"/>
+    <!-- paneled baseball cap, brim to the side -->
+    <g class="m-cap">
+        <path d="M23 27.5C22 15 30 8.5 40 8.5S56.5 14.5 56 26Z" fill="#0E1A4F"/>
+        <path d="M33 10.2C30.5 15 29.6 21 30 27.4l5.2-.4C34.8 21 35.5 14.8 37.4 9.1z" fill="#F76900"/>
+        <path d="M45.6 9.4C48.2 14.4 49.2 20.4 49 26.6l-5 .3C44.4 20.7 43.4 14.6 41.6 9z" fill="#F76900"/>
+        <path d="M54.5 24.5q8.5-1.3 12.6 1.4 1 .9-.4 1.6-6.5 1.6-13 .7z" fill="#0E1A4F"/>
+        <path d="M22.5 27q17.5-3.2 34 -.6l.2 2q-17-2.4-34.4.6z" fill="#0E1A4F"/>
+        <circle cx="40" cy="8.6" r="1.6" fill="#F76900"/>
+    </g>
+    <g class="m-face">
+        <path d="M27.8 31.6q3.2-2.3 6.6-.6M45.6 31q3.4-1.7 6.6.6" stroke="#0E1A4F" stroke-width="1.3" stroke-linecap="round" fill="none"/>
+        <g class="m-eyes">
+            <ellipse cx="31.5" cy="39" rx="4.6" ry="6" fill="#fff" stroke="#0E1A4F" stroke-width="0.9"/>
+            <ellipse cx="48.5" cy="39" rx="4.6" ry="6" fill="#fff" stroke="#0E1A4F" stroke-width="0.9"/>
+            <g class="m-pupils">
+                <ellipse cx="32.2" cy="40" rx="2.4" ry="3.1" fill="#0E1A4F"/>
+                <ellipse cx="47.8" cy="40" rx="2.4" ry="3.1" fill="#0E1A4F"/>
+                <circle cx="33" cy="38.8" r="0.8" fill="#fff"/>
+                <circle cx="48.6" cy="38.8" r="0.8" fill="#fff"/>
+            </g>
+            <path d="M27.4 35.4l-1.6-1.2M28.4 34l-1-1.6M51.6 34l1-1.6M52.6 35.4l1.6-1.2" stroke="#0E1A4F" stroke-width="0.9" stroke-linecap="round"/>
+        </g>
+        <path d="M39.5 43.2q-.8 2.2.8 2.4" stroke="#B84300" stroke-width="1" stroke-linecap="round" fill="none"/>
+        <path d="M28 47q12 9.5 24-1" stroke="#0E1A4F" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        <path d="M27.4 46.2q1.1-.3 1.6.9M52.6 45.2q-1.1-.4-1.6.8" stroke="#0E1A4F" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+    </g>
+</svg>
