@@ -108,6 +108,85 @@
         .consult-tabbed .consult-tabs button { width: 100%; padding: 0.75rem 0.9rem; }
         .consult-tabbed .consult-sections { margin-bottom: 0; }
     }
+    /* ---------- Redesigned top: hero + orbit, philosophy, building blocks ---------- */
+    .consult-hero-grid { position: relative; z-index: 1; display: grid; gap: 2rem; align-items: center; }
+    @media (min-width: 900px) { .consult-hero-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); } }
+    .consult-hero .consult-lead { font-size: 1.12rem; line-height: 1.75; max-width: 60ch; }
+    /* Services: highlighter-style underline (wraps cleanly across lines, unlike boxed pills) */
+    .consult-hero mark.svc {
+        background: linear-gradient(transparent 64%, rgba(247, 105, 0, 0.5) 64%);
+        color: #fff; font-weight: 600; padding: 0 0.08em;
+        -webkit-box-decoration-break: clone; box-decoration-break: clone;
+    }
+    .consult-orbit { position: relative; width: 320px; height: 300px; justify-self: center; }
+    @media (max-width: 899px) { .consult-orbit { width: 280px; height: 262px; } }
+    .orbit-lines { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .orbit-lines path, .orbit-lines circle { fill: none; stroke: rgba(255, 222, 190, 0.45); stroke-width: 2; stroke-dasharray: 5 7; stroke-linecap: round; }
+    .orbit-lines circle { stroke: rgba(255, 255, 255, 0.12); stroke-dasharray: none; }
+    .orbit-mascot { position: absolute; left: 50%; top: 50%; width: 120px; height: 111px; margin: -56px 0 0 -60px; animation: orbit-bob 3.2s ease-in-out infinite; }
+    .orbit-mascot .mascot { width: 100%; height: 100%; }
+    .consult-hero .mascot .m-cap path:first-child, .consult-hero .mascot .m-limbs path { stroke: #e9f0ff; stroke-width: 1.6; paint-order: stroke; stroke-linejoin: round; }
+    .orbit-badge {
+        position: absolute; display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.5rem 0.75rem;
+        border-radius: 14px; background: #fff; color: var(--su-navy); box-shadow: 0 16px 30px -16px rgba(0, 0, 0, 0.6);
+        font-size: 0.82rem; animation: orbit-float 4s ease-in-out infinite;
+    }
+    .orbit-badge svg { width: 1.15rem; height: 1.15rem; color: var(--su-orange-dark); }
+    .orbit-badge--1 { left: 0; top: 14%; }
+    .orbit-badge--2 { right: 0; top: 22%; animation-delay: -1.3s; }
+    .orbit-badge--3 { left: 38%; bottom: 0; animation-delay: -2.6s; }
+    @keyframes orbit-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    @keyframes orbit-bob { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-6px) rotate(2deg); } }
+
+    .consult-kicker {
+        display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 1rem;
+        font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--su-orange-dark);
+    }
+    .consult-kicker::before { content: ""; width: 1.4rem; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--su-orange), var(--su-orange-light)); }
+
+    .consult-philosophy {
+        display: grid; gap: 1.5rem 3rem; align-items: center; margin: 0 0 2.5rem;
+        padding: clamp(1.5rem, 4vw, 2.75rem); border-radius: 22px; background: #fff;
+        border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card);
+    }
+    @media (min-width: 900px) { .consult-philosophy { grid-template-columns: 1fr 1fr; } }
+    .consult-philosophy p { margin: 0; font-size: 1.05rem; line-height: 1.75; color: #46586b; }
+    .consult-quote { position: relative; margin: 0 0 1.1rem; padding: 0.4rem 0 0 2.6rem; }
+    .consult-quote::before { content: "\201C"; position: absolute; left: 0; top: -0.6rem; font-family: var(--font-display); font-size: 4.5rem; line-height: 1; color: var(--su-orange); }
+    .consult-quote p { font-family: var(--font-display); font-size: clamp(1.45rem, 3vw, 1.95rem); line-height: 1.25; letter-spacing: -0.015em; color: var(--su-navy); font-weight: 700; }
+
+    .consult-blocks { display: grid; gap: 2rem 3rem; align-items: center; margin: 0 0 2.75rem; }
+    @media (min-width: 900px) { .consult-blocks { grid-template-columns: 1.2fr 0.8fr; } }
+    .consult-blocks-text p { margin: 0; font-size: 1.05rem; line-height: 1.75; color: #46586b; max-width: 62ch; }
+    .block-tower { display: grid; justify-items: center; gap: 0; padding: 0.5rem 0 0.75rem; }
+    .block {
+        display: inline-flex; align-items: center; gap: 0.6rem; width: 220px; height: 64px; padding: 0 1.1rem;
+        border-radius: 14px; color: #fff; font-weight: 700; box-shadow: 0 14px 26px -16px rgba(13, 45, 76, 0.7), inset 0 -5px 0 rgba(0, 0, 0, 0.12);
+        margin-top: -6px;
+        transition: opacity 0.4s ease, transform 0.55s cubic-bezier(.2,.9,.3,1.3);
+    }
+    /* Hidden only once JS is ready to drop them in, so no-JS visitors still see the tower */
+    .js-tower .block { opacity: 0; transform: translateY(-40px) rotate(-4deg); }
+    .block svg { width: 1.4rem; height: 1.4rem; }
+    .block--1 { background: linear-gradient(135deg, #1c4b78, var(--su-navy)); transition-delay: 0.05s; }
+    .block--2 { background: linear-gradient(135deg, #ff9a3d, var(--su-orange)); width: 200px; transition-delay: 0.3s; rotate: 2deg; }
+    .block--3 { background: linear-gradient(135deg, #6fc4f2, var(--brand-teach-deep)); width: 180px; transition-delay: 0.55s; rotate: -2deg; }
+    /* Blocks stack from the bottom (Lecture) up once the section scrolls into view */
+    .js-tower.in-view .block { opacity: 1; transform: none; }
+    .block-tower .block--1 { order: 3; } .block-tower .block--2 { order: 2; } .block-tower .block--3 { order: 1; }
+    .block-tower.in-view .block--1 { transition-delay: 0.05s; }
+    .block-tower.in-view .block--2 { transition-delay: 0.3s; }
+    .block-tower.in-view .block--3 { transition-delay: 0.55s; }
+
+    .consult-cta { position: relative; overflow: hidden; }
+    .cta-mascot { display: block; width: 84px; height: 78px; margin: 0 auto 0.6rem; }
+    .cta-mascot .mascot { width: 100%; height: 100%; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .orbit-badge, .orbit-mascot { animation: none; }
+        .js-tower .block { opacity: 1; transform: none; transition: none; }
+    }
+
     .consult-cta {
         text-align: center; padding: 2.25rem 1.5rem; border-radius: 18px;
         background: linear-gradient(180deg, #fff5eb 0%, #ffffff 60%);
@@ -121,12 +200,43 @@
 {% block content %}
 <div class="consult">
     <section class="consult-hero" aria-labelledby="consult-heading">
-        <div class="consult-hero-inner">
-            <span class="consult-eyebrow">Consultations</span>
-            <h1 id="consult-heading">TeachOrange <span class="grad">Consultations</span></h1>
-            <p>The TeachOrange team offers consultations on active and engaged learning strategies, syllabus design and redesign, curricular integration of engaged learning strategies, internship integration and structuring, and undergraduate outreach strategies at the college level. We work on the philosophy that student outcomes are linked to instructors, departments, and schools employing purposeful and effective curricular strategies that develop knowledge, build skills, and foster connections between students, instructors, and schools. <mark class="hl">Education, job-readiness, and character are built intentionally.</mark> It is our goal to provide you with the plans and strategies to build your own effective structure.</p>
+        <div class="consult-hero-grid">
+            <div class="consult-hero-inner">
+                <span class="consult-eyebrow">Consultations</span>
+                <h1 id="consult-heading">TeachOrange <span class="grad">Consultations</span></h1>
+                <p class="consult-lead">The TeachOrange team offers consultations on <mark class="svc">active and engaged learning strategies</mark>, <mark class="svc">syllabus design and redesign</mark>, <mark class="svc">curricular integration of engaged learning strategies</mark>, <mark class="svc">internship integration and structuring</mark>, and <mark class="svc">undergraduate outreach strategies</mark> at the college level.</p>
+                <a href="{% url 'contact' %}?type=consultation" class="btn">Request a consultation</a>
+            </div>
+            <div class="consult-orbit" aria-hidden="true">
+                <svg class="orbit-lines" viewBox="0 0 320 300"><path d="M160 150 L62 70"/><path d="M160 150 L262 92"/><path d="M160 150 L170 262"/><circle cx="160" cy="150" r="118"/></svg>
+                <span class="orbit-badge orbit-badge--1"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg><b>Instructors</b></span>
+                <span class="orbit-badge orbit-badge--2"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><b>Departments</b></span>
+                <span class="orbit-badge orbit-badge--3"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 21h18"/><path d="M5 21V10l7-5 7 5v11"/><path d="M9 21v-6h6v6"/></svg><b>Schools</b></span>
+                <span class="orbit-mascot">{% include "partials/mascot.html" %}</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="consult-philosophy" aria-labelledby="philosophy-heading">
+        <div>
+            <h2 class="consult-kicker" id="philosophy-heading">Our philosophy</h2>
+            <p>We work on the philosophy that student outcomes are linked to instructors, departments, and schools employing purposeful and effective curricular strategies that develop knowledge, build skills, and foster connections between students, instructors, and schools.</p>
+        </div>
+        <div>
+            <blockquote class="consult-quote"><p>Education, job-readiness, and character are built intentionally.</p></blockquote>
+            <p>It is our goal to provide you with the plans and strategies to build your own effective structure.</p>
+        </div>
+    </section>
+
+    <section class="consult-blocks" aria-labelledby="blocks-heading">
+        <div class="consult-blocks-text">
+            <h2 class="consult-kicker" id="blocks-heading">Small moments</h2>
             <p>We also know that no issue or idea is too small to have a transformative impact on a student. That one amazing lecture, a small experience in a class, a conversation with a professor during office hours; these are the building blocks of a transformative educational experience. Our consultations can happen at any level and are most effective when strategies and goals permeate the entire curricular structure.</p>
-            <a href="{% url 'contact' %}?type=consultation" class="btn">Request a consultation</a>
+        </div>
+        <div class="block-tower" aria-hidden="true">
+            <span class="block block--3"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg><b>Office hours</b></span>
+            <span class="block block--2"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 10h16"/><path d="M6 10v9M18 10v9"/><path d="M8 6h8l1 4H7z"/></svg><b>Class</b></span>
+            <span class="block block--1"><svg class="" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M7 20l5-4 5 4"/><path d="M7 9h6M7 12h4"/></svg><b>Lecture</b></span>
         </div>
     </section>
 
@@ -165,6 +275,7 @@
     </div>
 
     <section class="consult-cta">
+        <span class="cta-mascot" aria-hidden="true">{% include "partials/mascot.html" %}</span>
         <h2>Interested in a consultation?</h2>
         <p>Reach out to the TeachOrange team to start a conversation.</p>
         <a href="{% url 'contact' %}?type=consultation" class="btn">Contact us</a>
@@ -173,6 +284,19 @@
 {% endblock %}
 
 {% block extra_js %}
+<script>
+    // Stack the "Small moments" blocks when they scroll into view.
+    (function () {
+        var tower = document.querySelector('.block-tower');
+        if (!tower || !('IntersectionObserver' in window)) return;
+        tower.classList.add('js-tower');
+        var io = new IntersectionObserver(function (entries) {
+            if (entries[0].isIntersecting) { tower.classList.add('in-view'); io.disconnect(); }
+        }, { threshold: 0.35 });
+        io.observe(tower);
+    })();
+</script>
+
 <script>
     (function() {
         var tablist = document.querySelector('.consult-tabs');
