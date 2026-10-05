@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Email unavailable{% endblock %}
+
+{% block extra_css %}
+<style>
+    .unavailable { max-width: 460px; margin: 1rem auto 3rem; padding: 2rem; text-align: center; background: #fff; border-radius: 16px; border: 1px solid rgba(13, 45, 76, 0.12); box-shadow: 0 8px 32px rgba(13, 45, 76, 0.08); }
+    .unavailable .mascot { width: 96px; height: 89px; margin: 0 auto 0.75rem; display: block; }
+    .unavailable .code { display: inline-block; margin-bottom: 0.6rem; padding: 0.25rem 0.7rem; border-radius: 999px; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.12em; color: var(--su-orange-dark); background: rgba(247, 105, 0, 0.1); }
+    .unavailable h1 { font-family: var(--font-display); font-size: 1.4rem; color: var(--su-navy); margin: 0 0 0.6rem; }
+    .unavailable p { margin: 0 0 1.25rem; color: #46586b; line-height: 1.6; }
+    .unavailable .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="unavailable" role="alert">
+    {% include "partials/mascot.html" %}
+    <span class="code">ERROR 503</span>
+    <h1>{{ heading|default:"Email isn’t available right now" }}</h1>
+    <p>{{ message|default:"We couldn’t send the email. Nothing was sent, so please try again a little later." }}</p>
+    <div class="actions">
+        <a href="{{ back_url|default:'/' }}" class="btn">{{ back_label|default:"Go back" }}</a>
+        <a href="{% url 'home' %}" class="btn btn-outline">Home</a>
+    </div>
+</div>
+{% endblock %}

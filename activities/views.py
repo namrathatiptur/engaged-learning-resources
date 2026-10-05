@@ -1,3 +1,4 @@
+import logging
 import mimetypes
 import os
 import re
@@ -14,11 +15,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_http_methods
 
+from config.email_status import email_delivery_available
 from config.error_handlers import json_error_response
 from .forms import ContactForm
 from .models import Activity, ActivityTag, Category, Material, Tag
 from .tile_images import tile_image_url
 
+
+logger = logging.getLogger(__name__)
 
 SORT_FIELDS = {"title", "-title", "created_at", "-created_at"}
 
@@ -204,6 +208,7 @@ def home(request):
 def contact(request):
     """Contact page with a message form that emails CONTACT_EMAIL."""
     user = request.user if request.user.is_authenticated else None
+    status = 200
     if request.method == "POST":
         data = request.POST.copy()
         if user and user.email:
@@ -234,11 +239,16 @@ def contact(request):
                 reply_to=[data["email"]],
             )
             try:
+                if not email_delivery_available():
+                    raise RuntimeError("No email backend configured (console backend with DEBUG off)")
                 email.send(fail_silently=False)
             except Exception:
+                # Keep the visitor's message on screen; 503 = the mail service, not the page, is unavailable.
+                logger.exception("Contact form email to %s could not be sent", recipient)
+                status = 503
                 messages.error(
                     request,
-                    "Sorry — we couldn't send your message right now. "
+                    "Sorry — we couldn't send your message right now, so nothing was sent. "
                     "Please try again in a few minutes.",
                 )
             else:
@@ -259,7 +269,9 @@ def contact(request):
         form = ContactForm(initial=initial)
     if user and user.email:
         form.fields["email"].widget.attrs["readonly"] = True
-    return render(request, "contact.html", {"form": form, "email_from_account": bool(user and user.email)})
+    return render(
+        request, "contact.html", {"form": form, "email_from_account": bool(user and user.email)}, status=status
+    )
 
 
 @require_GET

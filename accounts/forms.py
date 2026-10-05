@@ -74,3 +74,20 @@ class TeachOrangeAuthenticationForm(AuthenticationForm):
 class EduPasswordResetForm(PasswordResetForm):
     def clean_email(self):
         return validate_faculty_email(self.cleaned_data["email"])
+
+    def send_mail(
+        self, subject_template_name, email_template_name, context, from_email, to_email, html_email_template_name=None
+    ):
+        """
+        Same as Django's, but let delivery errors propagate. Django 4.2 logs and swallows
+        them, which would tell the user "check your email" even though nothing was sent.
+        """
+        from django.core.mail import EmailMultiAlternatives
+        from django.template import loader
+
+        subject = "".join(loader.render_to_string(subject_template_name, context).splitlines())
+        body = loader.render_to_string(email_template_name, context)
+        message = EmailMultiAlternatives(subject, body, from_email, [to_email])
+        if html_email_template_name:
+            message.attach_alternative(loader.render_to_string(html_email_template_name, context), "text/html")
+        message.send()

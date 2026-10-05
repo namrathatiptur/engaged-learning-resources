@@ -1,11 +1,11 @@
 """Template context processors."""
+from .email_status import is_console_backend
 
 
 def email_backend(request):
-    """Expose whether outgoing mail is printed (console) vs sent via SMTP."""
+    """Expose the console-email developer hint (local development only, never in production)."""
     from django.conf import settings
 
-    backend = getattr(settings, "EMAIL_BACKEND", "")
     return {
-        "email_is_console": "console" in backend,
+        "email_is_console": settings.DEBUG and is_console_backend(),
     }
