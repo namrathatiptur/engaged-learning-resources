@@ -187,71 +187,204 @@
     @keyframes home-card-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
     @media (prefers-reduced-motion: reduce) {
         .home-eyebrow, .home-hero h1, .home-lead, .home-hero-actions, .home-pills,
-        .home-feature, .home-bottom {
+        .home-bottom {
             animation: none !important; opacity: 1 !important; transform: none !important;
         }
     }
 
-    /* ---------- Features ---------- */
-    .home-features { display: grid; gap: 1.25rem; margin-bottom: 2.5rem; }
-    @media (min-width: 720px) { .home-features { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 1100px) { .home-features { grid-template-columns: repeat(4, 1fr); } }
-    .home-feature {
-        position: relative;
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px;
-        padding: 1.5rem 1.4rem;
-        opacity: 0; animation: home-card-in 0.55s var(--ease-out) forwards;
+    /* ---------- How it works: bento grid with live mini-illustrations ---------- */
+    .home-bento-wrap { margin: 0 0 3rem; }
+    .home-section-eyebrow {
+        display: inline-flex; align-items: center; gap: 0.5rem; margin: 0 0 1.1rem;
+        font-family: var(--font-mono); font-size: 0.74rem; font-weight: 600;
+        letter-spacing: 0.16em; text-transform: uppercase; color: var(--su-orange-dark);
+    }
+    .home-section-eyebrow::before { content: ""; width: 1.4rem; height: 2px; border-radius: 2px; background: linear-gradient(90deg, var(--su-orange), var(--su-orange-light)); }
+    .bento { display: grid; gap: 1.1rem; }
+    @media (min-width: 900px) {
+        .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+        .bento-a { grid-column: span 4; }
+        .bento-b { grid-column: span 2; }
+        .bento-c { grid-column: span 2; }
+        .bento-d { grid-column: span 4; }
+    }
+    .bento-card {
+        position: relative; display: flex; flex-direction: column; overflow: hidden;
+        background: #fff; border: 1px solid rgba(13, 45, 76, 0.08); border-radius: 20px;
         box-shadow: var(--shadow-card);
-        overflow: hidden;
-        transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease, border-color 0.25s ease;
+        transition: transform 0.3s var(--ease-out), box-shadow 0.3s ease, border-color 0.3s ease;
+        opacity: 0; animation: home-card-in 0.6s var(--ease-out) forwards;
     }
-    .home-feature:hover {
-        transform: translateY(-4px);
-        border-color: rgba(247, 105, 0, 0.35);
-        box-shadow: 0 22px 50px -22px rgba(13, 45, 76, 0.5);
+    .bento-card:nth-child(2) { animation-delay: 0.08s; }
+    .bento-card:nth-child(3) { animation-delay: 0.16s; }
+    .bento-card:nth-child(4) { animation-delay: 0.24s; }
+    .bento-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 3px; z-index: 2; }
+    .bento-a::before, .bento-c::before { background: linear-gradient(90deg, var(--brand-teach-sky), var(--brand-teach-deep)); }
+    .bento-b::before, .bento-d::before { background: linear-gradient(90deg, var(--su-orange-light), var(--su-orange-dark)); }
+    .bento-card:hover { transform: translateY(-4px); border-color: rgba(247, 105, 0, 0.3); box-shadow: 0 26px 60px -28px rgba(13, 45, 76, 0.55); }
+    .bento-stage {
+        position: relative; height: 210px; overflow: hidden;
+        background:
+            radial-gradient(80% 90% at 85% 0%, rgba(247, 105, 0, 0.12) 0%, transparent 60%),
+            radial-gradient(70% 90% at 0% 100%, rgba(62, 176, 234, 0.14) 0%, transparent 60%),
+            #f4f7fb;
+        border-bottom: 1px solid rgba(13, 45, 76, 0.06);
     }
-    @media (prefers-reduced-motion: reduce) { .home-feature:hover { transform: none; } }
-    .home-feature::before {
-        content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 3px; opacity: 0.95;
+    .bento-stage::before {
+        content: ""; position: absolute; inset: 0;
+        background-image: radial-gradient(rgba(13, 45, 76, 0.12) 1px, transparent 1px);
+        background-size: 16px 16px;
+        mask-image: radial-gradient(90% 90% at 50% 50%, #000 30%, transparent 85%);
+        -webkit-mask-image: radial-gradient(90% 90% at 50% 50%, #000 30%, transparent 85%);
     }
-    .home-feature--sky::before { background: linear-gradient(90deg, var(--brand-teach-sky), var(--brand-teach-deep)); }
-    .home-feature--orange::before { background: linear-gradient(90deg, var(--su-orange-light), var(--su-orange-dark)); }
-    .home-feature--edu::before { background: linear-gradient(90deg, var(--brand-teach-mid), #0d5a8c); }
-    .home-feature:nth-child(1) { animation-delay: 0.4s; }
-    .home-feature:nth-child(2) { animation-delay: 0.5s; }
-    .home-feature:nth-child(3) { animation-delay: 0.6s; }
-    .home-feature:nth-child(4) { animation-delay: 0.7s; }
-    .home-feature-icon {
-        width: 3rem; height: 3rem; border-radius: 13px;
-        display: flex; align-items: center; justify-content: center;
-        margin-bottom: 1rem;
+    .bento-body { padding: 1.3rem 1.4rem 1.45rem; }
+    .bento-body p { margin: 0; font-size: 1rem; line-height: 1.6; color: #46586b; }
+    .bento-body p strong { color: var(--su-navy); }
+
+    /* shared mini-UI pieces */
+    .mini-win {
+        position: absolute; background: #fff; border-radius: 12px;
+        border: 1px solid rgba(13, 45, 76, 0.1); box-shadow: 0 14px 34px -18px rgba(13, 45, 76, 0.45);
     }
-    .home-feature-icon svg { width: 1.5rem; height: 1.5rem; }
-    .home-feature--sky .home-feature-icon {
-        background: linear-gradient(145deg, rgba(126, 200, 245, 0.35), rgba(45, 139, 201, 0.14));
-        color: #0b5a8a; border: 1px solid rgba(61, 160, 220, 0.35);
-        box-shadow: 0 6px 18px -8px rgba(45, 139, 201, 0.6);
+    .mini-bar { height: 7px; border-radius: 4px; background: #dfe6ef; }
+    .mini-bar.navy { background: var(--su-navy); }
+    .mini-chip {
+        display: inline-flex; align-items: center; height: 20px; padding: 0 0.55rem; border-radius: 999px;
+        font-size: 0.66rem; font-weight: 600; color: var(--su-navy); background: #eef2f7; white-space: nowrap;
     }
-    .home-feature--orange .home-feature-icon {
-        background: linear-gradient(145deg, rgba(255, 140, 0, 0.25), rgba(247, 105, 0, 0.1));
-        color: var(--su-orange-dark); border: 1px solid rgba(247, 105, 0, 0.3);
-        box-shadow: 0 6px 18px -8px rgba(247, 105, 0, 0.55);
+    .mini-chip.on { background: var(--su-orange); color: #fff; }
+
+    /* A: search */
+    .viz-search { left: 6%; right: 6%; top: 22px; bottom: -12px; padding: 0.85rem 0.95rem; }
+    .viz-dots { display: flex; gap: 5px; margin-bottom: 0.7rem; }
+    .viz-dots i { width: 8px; height: 8px; border-radius: 50%; background: #e3e8ef; }
+    .viz-dots i:first-child { background: #ff8a65; }
+    .viz-field {
+        display: flex; align-items: center; gap: 0.5rem; height: 34px; padding: 0 0.7rem;
+        border: 1.5px solid rgba(247, 105, 0, 0.55); border-radius: 9px; box-shadow: 0 0 0 4px rgba(247, 105, 0, 0.1);
+        font-size: 0.82rem; color: var(--su-navy);
     }
-    .home-feature--edu .home-feature-icon {
-        background: linear-gradient(145deg, rgba(126, 200, 245, 0.3), rgba(45, 139, 201, 0.12));
-        color: #0b5a8a; border: 1px solid rgba(61, 160, 220, 0.35);
-        box-shadow: 0 6px 18px -8px rgba(45, 139, 201, 0.6);
+    .viz-field svg { width: 15px; height: 15px; color: var(--su-orange-dark); flex-shrink: 0; }
+    .viz-type { overflow: hidden; white-space: nowrap; border-right: 2px solid var(--su-orange); width: 0; animation: viz-type 5s steps(10) infinite, viz-caret 0.8s step-end infinite; }
+    @keyframes viz-type { 0%, 8% { width: 0; } 40%, 85% { width: 10ch; } 100% { width: 0; } }
+    @keyframes viz-caret { 50% { border-color: transparent; } }
+    .viz-chips { display: flex; gap: 0.35rem; margin: 0.65rem 0; flex-wrap: wrap; }
+    .viz-row {
+        display: grid; grid-template-columns: 34px 1fr auto; gap: 0.6rem; align-items: center;
+        padding: 0.45rem 0; border-top: 1px solid #eef2f7;
+        animation: viz-row-in 5s var(--ease-out) infinite;
     }
-    .home-feature h3 {
-        font-family: var(--font-display);
-        font-size: 1.08rem; color: var(--su-navy); margin: 0 0 0.45rem; font-weight: 600;
+    .viz-row:nth-of-type(2) { animation-delay: 0.15s; }
+    .viz-row:nth-of-type(3) { animation-delay: 0.3s; }
+    @keyframes viz-row-in { 0%, 38% { opacity: 0.25; transform: translateY(6px); } 48%, 90% { opacity: 1; transform: none; } 100% { opacity: 0.25; } }
+    .viz-thumb { width: 34px; height: 26px; border-radius: 6px; background: linear-gradient(135deg, #ffd2a8, #ffb062); }
+    .viz-row:nth-of-type(2) .viz-thumb { background: linear-gradient(135deg, #bfe5fb, #6fc4f2); }
+    .viz-row:nth-of-type(3) .viz-thumb { background: linear-gradient(135deg, #d6dcf5, #8d9bd8); }
+    .viz-lines { display: grid; gap: 5px; }
+
+    /* B: .edu sign-in + unlock */
+    .viz-signin { left: 50%; top: 26px; width: 210px; margin-left: -105px; padding: 0.9rem; text-align: left; }
+    .viz-field-sm {
+        display: flex; align-items: center; justify-content: space-between; height: 30px; padding: 0 0.6rem;
+        border: 1.5px solid #dfe6ef; border-radius: 8px; font-size: 0.74rem; color: var(--su-navy); margin: 0.55rem 0;
     }
-    .home-feature p { margin: 0; font-size: 1rem; color: #46586b; line-height: 1.6; }
-    .home-feature p strong { color: var(--su-navy); }
+    .viz-ok { display: inline-flex; width: 16px; height: 16px; border-radius: 50%; background: #22a06b; color: #fff; align-items: center; justify-content: center; animation: viz-pop 4s ease-in-out infinite; }
+    .viz-ok svg { width: 10px; height: 10px; }
+    @keyframes viz-pop { 0%, 30% { transform: scale(0); } 40%, 100% { transform: scale(1); } }
+    .viz-btn { height: 28px; border-radius: 8px; background: var(--su-orange); }
+    .viz-lock {
+        position: absolute; right: 16%; bottom: 18px; width: 46px; height: 46px; border-radius: 14px;
+        display: flex; align-items: center; justify-content: center; color: #fff;
+        background: linear-gradient(145deg, var(--su-navy), #1c4b78); box-shadow: 0 12px 26px -12px rgba(13, 45, 76, 0.8);
+    }
+    .viz-lock svg { width: 22px; height: 22px; overflow: visible; }
+    .viz-lock .shackle { transform-origin: 17px 11px; animation: viz-unlock 4s ease-in-out infinite; }
+    @keyframes viz-unlock { 0%, 40% { transform: translateY(0); } 55%, 100% { transform: translateY(-3px) rotate(-25deg); } }
+    .viz-files { position: absolute; left: 14%; bottom: 20px; display: flex; gap: 6px; }
+    .viz-file {
+        width: 30px; height: 38px; border-radius: 6px; background: #fff; border: 1px solid #dfe6ef;
+        display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px;
+        font-size: 0.5rem; font-weight: 800; letter-spacing: 0.04em; color: #fff;
+        animation: viz-file 4s ease-in-out infinite;
+    }
+    .viz-file b { padding: 1px 3px; border-radius: 3px; background: #e5484d; }
+    .viz-file:nth-child(2) b { background: #2d6fd2; }
+    .viz-file:nth-child(2) { animation-delay: 0.12s; }
+    @keyframes viz-file { 0%, 45% { opacity: 0.35; filter: grayscale(1); } 60%, 100% { opacity: 1; filter: none; } }
+
+    /* C: guide / assignments / examples stack */
+    .viz-docs { position: absolute; inset: 0; }
+    .viz-doc { width: 150px; height: 150px; padding: 0.75rem; left: 50%; top: 30px; margin-left: -75px; transition: transform 0.45s var(--ease-out); }
+    .viz-doc h6 { margin: 0 0 0.55rem; font-size: 0.68rem; font-weight: 700; color: var(--su-navy); letter-spacing: 0.01em; }
+    .viz-doc .mini-bar { margin-bottom: 6px; }
+    .viz-doc-1 { transform: translateX(-46px) rotate(-9deg); }
+    .viz-doc-2 { transform: translateX(46px) rotate(9deg); }
+    .viz-doc-3 { transform: translateY(-6px); border-top: 3px solid var(--su-orange); }
+    .bento-c:hover .viz-doc-1 { transform: translateX(-62px) rotate(-13deg); }
+    .bento-c:hover .viz-doc-2 { transform: translateX(62px) rotate(13deg); }
+    .bento-c:hover .viz-doc-3 { transform: translateY(-12px); }
+    .viz-doc-tag { display: inline-block; margin-top: 0.35rem; padding: 2px 6px; border-radius: 4px; font-size: 0.58rem; font-weight: 700; color: var(--su-orange-dark); background: rgba(247, 105, 0, 0.12); }
+
+    /* D: download -> adapt -> teach timeline + time dial */
+    .viz-time { position: absolute; inset: 0; display: grid; grid-template-columns: 150px 1fr; align-items: center; gap: 1.4rem; padding: 0 2rem; }
+    .viz-dial { position: relative; width: 140px; height: 140px; }
+    .viz-dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .viz-dial .track { stroke: #e3e8ef; }
+    .viz-dial .fill { stroke: url(#dialGrad); stroke-dasharray: 339.3; stroke-dashoffset: 339.3; animation: viz-dial 5s var(--ease-out) infinite; }
+    @keyframes viz-dial { 0% { stroke-dashoffset: 339.3; } 45%, 85% { stroke-dashoffset: 84.8; } 100% { stroke-dashoffset: 339.3; } }
+    .viz-dial-label { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .viz-dial-label strong { font-family: var(--font-display); font-size: 1.55rem; color: var(--su-navy); line-height: 1; }
+    .viz-dial-label span { font-size: 0.68rem; font-weight: 600; color: #6b7c8d; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .viz-steps { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); }
+    .viz-steps::before { content: ""; position: absolute; left: 16%; right: 16%; top: 21px; height: 3px; border-radius: 3px; background: #e3e8ef; }
+    .viz-steps::after {
+        content: ""; position: absolute; left: 16%; top: 21px; height: 3px; border-radius: 3px; width: 0;
+        background: linear-gradient(90deg, var(--su-orange-light), var(--su-orange-dark)); animation: viz-progress 5s var(--ease-out) infinite;
+    }
+    @keyframes viz-progress { 0% { width: 0; } 45%, 85% { width: 68%; } 100% { width: 0; } }
+    .viz-step { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; font-size: 0.74rem; font-weight: 700; color: var(--su-navy); }
+    .viz-step i {
+        width: 45px; height: 45px; border-radius: 14px; display: flex; align-items: center; justify-content: center;
+        background: #fff; border: 1px solid rgba(13, 45, 76, 0.1); box-shadow: 0 10px 22px -14px rgba(13, 45, 76, 0.6); color: var(--su-orange-dark);
+    }
+    .viz-step i svg { width: 20px; height: 20px; }
+    .viz-step:last-child i { background: var(--su-navy); color: #fff; }
+    @media (max-width: 520px) {
+        .viz-time { grid-template-columns: 1fr; justify-items: center; gap: 0.6rem; padding: 0.8rem 1rem; }
+        .viz-dial { width: 96px; height: 96px; }
+        .viz-dial-label strong { font-size: 1.1rem; }
+        .viz-steps { width: 100%; }
+        .bento-d .bento-stage { height: 250px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .bento-card, .viz-type, .viz-row, .viz-ok, .viz-lock .shackle, .viz-file, .viz-dial .fill, .viz-steps::after { animation: none !important; }
+        .bento-card { opacity: 1; }
+        .viz-type { width: 10ch; }
+        .viz-dial .fill { stroke-dashoffset: 84.8; }
+        .viz-steps::after { width: 68%; }
+        .bento-card:hover { transform: none; }
+    }
+
+    /* ---------- Recently added ---------- */
+    .home-recent { margin: 0 0 3rem; }
+    .home-recent-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; margin-bottom: 1.1rem; }
+    .home-recent-head .home-section-eyebrow { margin: 0; }
+    .home-recent-head a { font-weight: 600; color: var(--su-orange-dark); text-decoration: none; }
+    .home-recent-head a:hover { text-decoration: underline; }
+    .recent-grid { display: grid; gap: 1.1rem; }
+    @media (min-width: 720px) { .recent-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    .recent-card {
+        display: flex; flex-direction: column; overflow: hidden; text-decoration: none; color: inherit;
+        background: #fff; border: 1px solid rgba(13, 45, 76, 0.08); border-radius: 18px; box-shadow: var(--shadow-card);
+        transition: transform 0.3s var(--ease-out), box-shadow 0.3s ease;
+    }
+    .recent-card:hover { transform: translateY(-4px); box-shadow: 0 26px 60px -28px rgba(13, 45, 76, 0.55); }
+    .recent-card img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; display: block; background: #e3e8ef; }
+    .recent-card-body { padding: 1rem 1.1rem 1.15rem; display: grid; gap: 0.45rem; }
+    .recent-card-cat { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--su-orange-dark); }
+    .recent-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.1rem; color: var(--su-navy); }
+    .recent-card-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    @media (prefers-reduced-motion: reduce) { .recent-card:hover { transform: none; } }
 
     /* ---------- Bottom CTA ---------- */
     .home-bottom {
@@ -517,32 +650,83 @@
         </a>
     </section>
 
-    <section class="home-features" id="home-more" aria-label="How TeachOrange works">
-        <article class="home-feature home-feature--sky">
-            <div class="home-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            </div>
-            <p>Our teaching activities have descriptions, tags, and downloadable handouts and files, so you can <strong>browse and search without signing in</strong>.</p>
-        </article>
-        <article class="home-feature home-feature--orange">
-            <div class="home-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            </div>
-            <p>Sign in with your <strong>.edu</strong> email when you want to preview files or download materials.</p>
-        </article>
-        <article class="home-feature home-feature--edu">
-            <div class="home-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M8 7h8M8 11h6"/></svg>
-            </div>
-            <p>Each activity has a guide for implementing the activity along with possible additional assignments and implementation examples. The individual activities are designed to be easy to use.</p>
-        </article>
-        <article class="home-feature home-feature--orange">
-            <div class="home-feature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-            </div>
-            <p>Once you download the activity, it should take no more than <strong>15-30 minutes</strong> to adapt it to your class. The first few may take a bit longer, but you will quickly get the hang of it.</p>
-        </article>
+    <section class="home-bento-wrap" id="home-more" aria-labelledby="how-heading">
+        <h2 class="home-section-eyebrow" id="how-heading">How it works</h2>
+        <div class="bento">
+            <article class="bento-card bento-a">
+                <div class="bento-stage" aria-hidden="true">
+                    <div class="mini-win viz-search">
+                        <div class="viz-dots"><i></i><i></i><i></i></div>
+                        <div class="viz-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><span class="viz-type">icebreaker</span></div>
+                        <div class="viz-chips"><span class="mini-chip on">Group</span><span class="mini-chip">Single class</span><span class="mini-chip">Discussion</span><span class="mini-chip">Presentation</span></div>
+                        <div class="viz-row"><span class="viz-thumb"></span><span class="viz-lines"><span class="mini-bar navy" style="width:55%"></span><span class="mini-bar" style="width:80%"></span></span><span class="mini-chip">Group</span></div>
+                        <div class="viz-row"><span class="viz-thumb"></span><span class="viz-lines"><span class="mini-bar navy" style="width:42%"></span><span class="mini-bar" style="width:70%"></span></span><span class="mini-chip">Research</span></div>
+                        <div class="viz-row"><span class="viz-thumb"></span><span class="viz-lines"><span class="mini-bar navy" style="width:60%"></span><span class="mini-bar" style="width:64%"></span></span><span class="mini-chip">Debate</span></div>
+                    </div>
+                </div>
+                <div class="bento-body"><p>Our teaching activities have descriptions, tags, and downloadable handouts and files, so you can <strong>browse and search without signing in</strong>.</p></div>
+            </article>
+            <article class="bento-card bento-b">
+                <div class="bento-stage" aria-hidden="true">
+                    <div class="mini-win viz-signin">
+                        <span class="mini-bar navy" style="display:block;width:46%"></span>
+                        <div class="viz-field-sm">you@university.edu <span class="viz-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span></div>
+                        <div class="viz-btn"></div>
+                    </div>
+                    <div class="viz-files"><span class="viz-file"><b>PDF</b></span><span class="viz-file"><b>DOC</b></span></div>
+                    <div class="viz-lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path class="shackle" d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></div>
+                </div>
+                <div class="bento-body"><p>Sign in with your <strong>.edu</strong> email when you want to preview files or download materials.</p></div>
+            </article>
+            <article class="bento-card bento-c">
+                <div class="bento-stage" aria-hidden="true">
+                    <div class="viz-docs">
+                        <div class="mini-win viz-doc viz-doc-1"><h6>Assignments</h6><span class="mini-bar" style="display:block;width:90%"></span><span class="mini-bar" style="display:block;width:70%"></span><span class="mini-bar" style="display:block;width:82%"></span></div>
+                        <div class="mini-win viz-doc viz-doc-2"><h6>Examples</h6><span class="mini-bar" style="display:block;width:76%"></span><span class="mini-bar" style="display:block;width:88%"></span><span class="mini-bar" style="display:block;width:60%"></span></div>
+                        <div class="mini-win viz-doc viz-doc-3"><h6>Implementation guide</h6><span class="mini-bar navy" style="display:block;width:64%"></span><span class="mini-bar" style="display:block;width:92%"></span><span class="mini-bar" style="display:block;width:80%"></span><span class="mini-bar" style="display:block;width:86%"></span><span class="viz-doc-tag">Step 1 · Step 2 · Step 3</span></div>
+                    </div>
+                </div>
+                <div class="bento-body"><p>Each activity has a guide for implementing the activity along with possible additional assignments and implementation examples. The individual activities are designed to be easy to use.</p></div>
+            </article>
+            <article class="bento-card bento-d">
+                <div class="bento-stage" aria-hidden="true">
+                    <div class="viz-time">
+                        <div class="viz-dial">
+                            <svg viewBox="0 0 120 120"><defs><linearGradient id="dialGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff9a3d"/><stop offset="1" stop-color="#F76900"/></linearGradient></defs><circle class="track" cx="60" cy="60" r="54" fill="none" stroke-width="10"/><circle class="fill" cx="60" cy="60" r="54" fill="none" stroke-width="10" stroke-linecap="round"/></svg>
+                            <div class="viz-dial-label"><strong>15–30</strong><span>minutes</span></div>
+                        </div>
+                        <div class="viz-steps">
+                            <div class="viz-step"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M5 21h14"/></svg></i>Download</div>
+                            <div class="viz-step"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></i>Adapt</div>
+                            <div class="viz-step"><i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h20v14H2z"/><path d="M8 21h8M12 17v4"/></svg></i>Teach</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bento-body"><p>Once you download the activity, it should take no more than <strong>15-30 minutes</strong> to adapt it to your class. The first few may take a bit longer, but you will quickly get the hang of it.</p></div>
+            </article>
+        </div>
     </section>
+
+    {% if recent_activities %}
+    <section class="home-recent" aria-labelledby="recent-heading">
+        <div class="home-recent-head">
+            <h2 class="home-section-eyebrow" id="recent-heading">Recently added</h2>
+            <a href="{% url 'activities:list' %}">Browse all &rarr;</a>
+        </div>
+        <div class="recent-grid">
+            {% for row in recent_activities %}
+            <a class="recent-card" href="{% url 'activities:detail' row.activity.slug %}">
+                <img src="{{ row.tile_image }}" alt="" loading="lazy">
+                <div class="recent-card-body">
+                    {% if row.activity.category %}<span class="recent-card-cat">{{ row.activity.category.name }}</span>{% endif %}
+                    <h3>{{ row.activity.title }}</h3>
+                    <div class="recent-card-tags">{% for tag in row.activity.tags.all|slice:":3" %}<span class="mini-chip">{{ tag.display_name }}</span>{% endfor %}</div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 
     <section class="home-bottom">
         {% if user.is_authenticated %}

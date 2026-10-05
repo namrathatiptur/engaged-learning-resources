@@ -188,7 +188,11 @@ def material_download(request, material_id):
 @require_GET
 def home(request):
     """Landing page describing the teaching activities platform."""
-    return render(request, "home.html")
+    recent = (
+        Activity.objects.select_related("category").prefetch_related("tags").order_by("-created_at")[:3]
+    )
+    recent_activities = [{"activity": a, "tile_image": tile_image_url(a)} for a in recent]
+    return render(request, "home.html", {"recent_activities": recent_activities})
 
 
 @require_http_methods(["GET", "POST"])
