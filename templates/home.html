@@ -229,7 +229,12 @@
     .mini-chip.on { background: var(--su-orange); color: #fff; }
 
     /* A: search */
-    .viz-search { left: 6%; right: 6%; top: 22px; bottom: -12px; padding: 0.85rem 0.95rem; }
+    /* A complete window: contents clipped inside, with a fade where the result list continues */
+    .viz-search { left: 6%; right: 6%; top: 14px; bottom: 14px; padding: 0.85rem 0.95rem; overflow: hidden; }
+    .viz-search::after {
+        content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 34px; pointer-events: none;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 85%);
+    }
     .viz-dots { display: flex; gap: 5px; margin-bottom: 0.7rem; }
     .viz-dots i { width: 8px; height: 8px; border-radius: 50%; background: #e3e8ef; }
     .viz-dots i:first-child { background: #ff8a65; }
