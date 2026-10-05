@@ -6,59 +6,164 @@
 {% block extra_css %}
 <style>
     body { background: #eef2f7; }
-    .team-page { max-width: 1000px; margin: 0 auto; }
-    .team-intro { margin: 0 0 1.5rem; color: #46586b; line-height: 1.7; font-size: 1.05rem; max-width: 70ch; }
-    .team-grid { display: grid; gap: 1.5rem; }
-    @media (min-width: 720px) { .team-grid { grid-template-columns: repeat(2, 1fr); } }
-    .member-card {
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.6);
-        border-radius: 16px; padding: 1.75rem 1.4rem;
-        box-shadow: var(--shadow-card);
-        display: flex; flex-direction: column; align-items: center; text-align: center;
-        transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease;
+    .team-intro { margin: 0 0 1rem; color: #46586b; line-height: 1.7; font-size: 1.05rem; max-width: 70ch; }
+
+    /* Squiggle under "team" replaces the default title underline on this page */
+    .page-title::after { display: none; }
+    .doodle-under { position: relative; display: inline-block; }
+    .doodle-squiggle { position: absolute; left: -4%; width: 108%; bottom: -0.28em; height: 0.36em; overflow: visible; }
+    .doodle-squiggle path {
+        fill: none; stroke: var(--su-orange); stroke-width: 4.5; stroke-linecap: round;
+        stroke-dasharray: 260; stroke-dashoffset: 260; animation: doodle-draw 0.9s 0.3s cubic-bezier(.6,.1,.3,1) forwards;
     }
-    .member-card:hover { transform: translateY(-3px); box-shadow: 0 22px 50px -22px rgba(13, 45, 76, 0.5); }
-    @media (prefers-reduced-motion: reduce) { .member-card:hover { transform: none; } }
-    .member-avatar {
-        width: 132px; height: 132px; border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        font-family: var(--font-display); font-size: 1.9rem; font-weight: 700; color: #fff;
-        border: 3px solid rgba(255, 255, 255, 0.75);
-        box-shadow: 0 10px 26px -10px rgba(13, 45, 76, 0.55);
-        margin-bottom: 1rem; overflow: hidden;
+    @keyframes doodle-draw { to { stroke-dashoffset: 0; } }
+
+    /* ---------- Lanyard badges ---------- */
+    .team-board { position: relative; display: grid; gap: 2.5rem 2rem; padding-top: 0.5rem; }
+    @media (min-width: 820px) { .team-board { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    /* Drop-in runs once on .badge; the hover swing lives on .badge-inner so it never replays the drop */
+    .badge {
+        position: relative;
+        animation: badge-drop 0.9s calc(var(--i) * 0.18s) cubic-bezier(.2,.9,.3,1.25) backwards;
     }
-    .member-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; background: #fff; }
-    .member-avatar--orange { background: linear-gradient(145deg, #FF9E2C 0%, var(--su-orange) 55%, var(--su-orange-dark) 100%); }
-    .member-avatar--sky { background: linear-gradient(145deg, #6fc4f2 0%, var(--brand-teach-mid) 55%, var(--brand-teach-deep) 100%); }
-    .member-avatar--navy { background: linear-gradient(145deg, #1c4b78 0%, var(--su-navy) 60%, var(--su-navy-900) 100%); }
-    .member-card h2 {
-        font-family: var(--font-display); font-size: 1.2rem; font-weight: 700;
-        color: var(--su-navy); margin: 0 0 0.25rem; letter-spacing: -0.01em;
+    .badge-inner { transform-origin: 50% 0; }
+    .badge-inner.is-swinging { animation: badge-swing 1.4s ease-in-out; }
+    @keyframes badge-drop { from { transform: translateY(-60px) rotate(-6deg); opacity: 0; } to { transform: none; opacity: 1; } }
+    @keyframes badge-swing {
+        0% { transform: rotate(0); } 18% { transform: rotate(3.2deg); } 38% { transform: rotate(-2.4deg); }
+        58% { transform: rotate(1.4deg); } 78% { transform: rotate(-0.6deg); } 100% { transform: rotate(0); }
     }
-    .member-role { margin: 0 0 0.85rem; font-size: 0.85rem; font-weight: 600; color: var(--su-orange-dark); }
-    .member-bio { margin: 0; font-size: 0.95rem; color: #55677a; line-height: 1.65; text-align: left; }
+    .lanyard { position: relative; height: 64px; display: flex; flex-direction: column; align-items: center; }
+    .lanyard-strap {
+        width: 26px; flex: 1; border-radius: 3px 3px 0 0;
+        background: repeating-linear-gradient(90deg, var(--su-navy) 0 6px, var(--su-orange) 6px 13px);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+    }
+    .lanyard-clip {
+        width: 34px; height: 18px; margin-top: -2px; border-radius: 6px 6px 10px 10px;
+        background: linear-gradient(180deg, #d9dee6, #9aa6b5); box-shadow: 0 3px 6px -2px rgba(13, 45, 76, 0.5);
+    }
+    .badge-card {
+        position: relative; margin-top: -6px; overflow: hidden;
+        background: #fff; border-radius: 22px; border: 1px solid rgba(13, 45, 76, 0.08);
+        box-shadow: 0 26px 60px -30px rgba(13, 45, 76, 0.55);
+        padding-bottom: 1.6rem; text-align: center;
+    }
+    .badge-band {
+        position: relative; height: 92px;
+        background:
+            radial-gradient(120% 140% at 100% 0%, rgba(247, 105, 0, 0.45) 0%, transparent 55%),
+            var(--su-navy);
+    }
+    .badge--orange .badge-band {
+        background: radial-gradient(120% 140% at 0% 0%, rgba(62, 176, 234, 0.4) 0%, transparent 55%), linear-gradient(135deg, #ff8f3a, var(--su-orange) 55%, var(--su-orange-dark));
+    }
+    .badge-slot { position: absolute; top: 12px; left: 50%; width: 46px; height: 9px; margin-left: -23px; border-radius: 9px; background: #eef2f7; box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.25); }
+    .badge-brand { position: absolute; left: 1rem; top: 0.75rem; font-family: var(--font-display); font-weight: 700; font-size: 0.85rem; letter-spacing: 0.02em; }
+    .badge--orange .badge-brand .brand-orange { color: #fff; }
+    .badge--orange .badge-brand .brand-teach { background: none; color: var(--su-navy); -webkit-text-fill-color: var(--su-navy); }
+
+    /* Polaroid photo with washi tape */
+    .polaroid {
+        position: relative; width: 168px; margin: -40px auto 1.1rem; padding: 10px 10px 28px;
+        background: #fff; border-radius: 4px; rotate: -3deg;
+        box-shadow: 0 14px 30px -14px rgba(13, 45, 76, 0.55), 0 0 0 1px rgba(13, 45, 76, 0.05);
+        transition: rotate 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+    }
+    .badge--orange .polaroid { rotate: 3deg; }
+    .badge:hover .polaroid { rotate: 0deg; transform: scale(1.04); }
+    .polaroid img { display: block; width: 148px; height: 148px; object-fit: cover; object-position: 50% 30%; background: #eef2f7; }
+    .tape { position: absolute; top: -10px; width: 58px; height: 20px; opacity: 0.85; border-radius: 2px; }
+    .tape-l { left: -14px; rotate: -32deg; background: repeating-linear-gradient(45deg, rgba(247, 105, 0, 0.55) 0 6px, rgba(255, 179, 102, 0.55) 6px 12px); }
+    .tape-r { right: -14px; rotate: 30deg; background: repeating-linear-gradient(45deg, rgba(62, 176, 234, 0.5) 0 6px, rgba(160, 216, 247, 0.5) 6px 12px); }
+    .doodle-sparkle { position: absolute; width: 22px; height: 22px; fill: none; stroke: var(--su-orange); stroke-width: 2.2; stroke-linecap: round; }
+    .sparkle-a { right: -30px; top: 30px; animation: sparkle 2.6s ease-in-out infinite; }
+    .sparkle-b { left: -26px; bottom: 26px; width: 15px; height: 15px; stroke: var(--brand-teach-mid); animation: sparkle 2.6s 1.3s ease-in-out infinite; }
+    @keyframes sparkle { 0%, 100% { transform: scale(0.7) rotate(0); opacity: 0.6; } 50% { transform: scale(1.1) rotate(45deg); opacity: 1; } }
+
+    .badge-card h2 { font-family: var(--font-display); font-size: 1.35rem; color: var(--su-navy); margin: 0 1.2rem 0.5rem; letter-spacing: -0.01em; }
+    .member-role {
+        display: inline-block; margin: 0 1rem 1.1rem; padding: 0.3rem 0.8rem; rotate: -1.5deg;
+        font-size: 0.82rem; font-weight: 700; color: var(--su-orange-dark);
+        background: #fff4ea; border: 1.5px dashed rgba(247, 105, 0, 0.55); border-radius: 8px;
+    }
+    .member-bio { margin: 0 1.6rem; text-align: left; font-size: 0.98rem; color: #46586b; line-height: 1.7; }
     .member-bio a { color: var(--su-orange-dark); font-weight: 600; }
+
+    /* Mascot peeking over the board */
+    .team-peek { display: none; }
+    @media (min-width: 820px) {
+        .team-peek {
+            display: block; position: absolute; z-index: 2; right: -18px; top: 70px; width: 92px; height: 85px;
+            rotate: 14deg; animation: peek 0.8s 1.2s cubic-bezier(.2,.9,.3,1.3) backwards;
+        }
+        .team-peek .mascot { width: 100%; height: 100%; }
+    }
+    @keyframes peek { from { transform: translate(40px, 30px) scale(0.6); opacity: 0; } to { transform: none; opacity: 1; } }
+
+    @media (prefers-reduced-motion: reduce) {
+        .badge, .badge-inner.is-swinging, .team-peek, .doodle-sparkle { animation: none; }
+        .doodle-squiggle path { animation: none; stroke-dashoffset: 0; }
+        .badge:hover .polaroid { transform: none; }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<h1 class="page-title">Meet the team</h1>
+<h1 class="page-title">Meet the <span class="doodle-under">team<svg class="doodle-squiggle" viewBox="0 0 120 16" preserveAspectRatio="none" aria-hidden="true"><path d="M3 10c12-7 22 5 34 0s22-8 34-1 22 6 34 0 10-3 12-2"/></svg></span></h1>
 <p class="team-intro">The people behind <span class="brand-teach">Teach</span><span class="brand-orange">Orange</span>, bringing engaged teaching activities to course instructors.</p>
 
-<div class="team-grid">
-    <article class="member-card">
-        <div class="member-avatar member-avatar--orange"><img src="{% static 'team/mark-brockway.jpg' %}" alt="Mark Brockway"></div>
-        <h2>Mark Brockway</h2>
-        <p class="member-role">Assistant Teaching Professor, Political Science</p>
-        <p class="member-bio">Mark Brockway is an Assistant Teaching Professor in Political Science at Syracuse University. He has developed many effective strategies for increasing student engagement and learning in and out of the classroom. He is especially interested in expanding opportunities for civic engagement, giving every student the chance to do an internship, and structuring curricula and degree programs to better serve student goals. He also studies religion in American politics. You can read more on his personal website <a href="https://markbrockway.com" target="_blank" rel="noopener">markbrockway.com</a></p>
+<div class="team-board">
+    <article class="badge badge--navy" style="--i: 0">
+        <div class="badge-inner">
+        <div class="lanyard" aria-hidden="true"><span class="lanyard-strap"></span><span class="lanyard-clip"></span></div>
+        <div class="badge-card">
+            <div class="badge-band"><span class="badge-slot" aria-hidden="true"></span><span class="badge-brand"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span></span></div>
+            <div class="polaroid">
+                <span class="tape tape-l" aria-hidden="true"></span><span class="tape tape-r" aria-hidden="true"></span>
+                <img src="{% static 'team/mark-brockway.jpg' %}" alt="Mark Brockway">
+                <svg class="doodle-sparkle sparkle-a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/></svg>
+                <svg class="doodle-sparkle sparkle-b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/></svg>
+            </div>
+            <h2>Mark Brockway</h2>
+            <p class="member-role">Assistant Teaching Professor, Political Science</p>
+            <p class="member-bio">Mark Brockway is an Assistant Teaching Professor in Political Science at Syracuse University. He has developed many effective strategies for increasing student engagement and learning in and out of the classroom. He is especially interested in expanding opportunities for civic engagement, giving every student the chance to do an internship, and structuring curricula and degree programs to better serve student goals. He also studies religion in American politics. You can read more on his personal website <a href="https://markbrockway.com" target="_blank" rel="noopener">markbrockway.com</a></p>
+        </div>
+        </div>
     </article>
-    <article class="member-card">
-        <div class="member-avatar member-avatar--navy"><img src="{% static 'team/namratha-tiptur-manjunath.jpg' %}" alt="Namratha Tiptur Manjunath"></div>
-        <h2>Namratha Tiptur Manjunath</h2>
-        <p class="member-role">Website &amp; platform development</p>
-        <p class="member-bio">Namratha Tiptur Manjunath designed and built the TeachOrange website and platform. A data engineer and machine learning enthusiast pursuing a Master's at Syracuse University, Namratha works with healthcare data, builds ETL pipelines, and designs machine learning models. Before graduate school, Namratha spent a year as a data engineer at Carelon Global Solutions in Bangalore, and most recently interned as a Data and Research Intern at the Centre for Public Impact, building data pipelines and dashboards that help government and philanthropic partners make sense of survey data.</p>
+    <article class="badge badge--orange" style="--i: 1">
+        <div class="badge-inner">
+        <div class="lanyard" aria-hidden="true"><span class="lanyard-strap"></span><span class="lanyard-clip"></span></div>
+        <div class="badge-card">
+            <div class="badge-band"><span class="badge-slot" aria-hidden="true"></span><span class="badge-brand"><span class="brand-teach">Teach</span><span class="brand-orange">Orange</span></span></div>
+            <div class="polaroid">
+                <span class="tape tape-l" aria-hidden="true"></span><span class="tape tape-r" aria-hidden="true"></span>
+                <img src="{% static 'team/namratha-tiptur-manjunath.jpg' %}" alt="Namratha Tiptur Manjunath">
+                <svg class="doodle-sparkle sparkle-a" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/></svg>
+                <svg class="doodle-sparkle sparkle-b" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v6M12 16v6M2 12h6M16 12h6M5 5l3.5 3.5M15.5 15.5 19 19M19 5l-3.5 3.5M8.5 15.5 5 19"/></svg>
+            </div>
+            <h2>Namratha Tiptur Manjunath</h2>
+            <p class="member-role">Website &amp; platform development</p>
+            <p class="member-bio">Namratha Tiptur Manjunath designed and built the TeachOrange website and platform. A data engineer and machine learning enthusiast pursuing a Master's at Syracuse University, Namratha works with healthcare data, builds ETL pipelines, and designs machine learning models. Before graduate school, Namratha spent a year as a data engineer at Carelon Global Solutions in Bangalore, and most recently interned as a Data and Research Intern at the Centre for Public Impact, building data pipelines and dashboards that help government and philanthropic partners make sense of survey data.</p>
+        </div>
+        </div>
     </article>
+    <span class="team-peek" aria-hidden="true">{% include "partials/mascot.html" %}</span>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Swing a badge when the pointer (or keyboard focus) arrives; let each swing finish
+    // instead of snapping back when the pointer leaves mid-swing.
+    document.querySelectorAll('.badge').forEach(function(badge) {
+        var inner = badge.querySelector('.badge-inner');
+        function swing() { inner.classList.add('is-swinging'); }
+        badge.addEventListener('pointerenter', swing);
+        badge.addEventListener('focusin', swing);
+        inner.addEventListener('animationend', function(e) {
+            if (e.animationName === 'badge-swing') inner.classList.remove('is-swinging');
+        });
+    });
+</script>
 {% endblock %}
