@@ -119,6 +119,10 @@ def _material_dict(m, request):
         "preview_kind": kind,
         "show_preview_button": show_preview_button,
         "has_preview_pdf": bool(m.preview_pdf),
+        # File extension of the main file (or preview PDF), for the file-type tile on the detail page
+        "file_ext": os.path.splitext((m.file or m.preview_pdf).name)[1].lstrip(".").lower()
+        if (m.file or m.preview_pdf)
+        else "",
     }
     # Office Online cannot fetch login-protected URLs (no session cookie). PDF preview is preferred.
     if kind == "office" and file_open_url:
@@ -515,6 +519,35 @@ def activity_list(request):
     )
 
 
+def _related_activities(activity, limit=3):
+    """Activities sharing the category or tags, ranked by how many tags they share."""
+    tag_ids = [t.id for t in activity.tags.all()]
+    qs = (
+        Activity.objects.exclude(pk=activity.pk)
+        .filter(Q(category_id=activity.category_id) | Q(tags__id__in=tag_ids))
+        .annotate(shared=Count("tags", filter=Q(tags__id__in=tag_ids), distinct=True))
+        .select_related("category")
+        .prefetch_related("tags")
+        .order_by("-shared", "-created_at")
+        .distinct()[:limit]
+    )
+    rows = []
+    for a in qs:
+        body, duration = _split_duration(a.description)
+        tags_list = list(a.tags.all())
+        rows.append(
+            {
+                "activity": a,
+                "tile_image": tile_image_url(a),
+                "description": body,
+                "duration": duration,
+                "tags_shown": tags_list[:3],
+                "tags_more": max(0, len(tags_list) - 3),
+            }
+        )
+    return rows
+
+
 @require_GET
 def activity_detail(request, slug):
     """Retrieve a single activity by slug. Returns HTML or JSON."""
@@ -527,10 +560,18 @@ def activity_detail(request, slug):
 
     # HTML response
     if "text/html" in request.META.get("HTTP_ACCEPT", ""):
+        description, duration = _split_duration(activity.description)
         return render(
             request,
             "activities/activity_detail.html",
-            {"activity": activity, "materials": materials},
+            {
+                "activity": activity,
+                "materials": materials,
+                "description": description,
+                "duration": duration,
+                "tile_image": tile_image_url(activity),
+                "related_activities": _related_activities(activity),
+            },
         )
 
     # JSON response

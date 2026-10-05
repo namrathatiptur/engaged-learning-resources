@@ -4,280 +4,247 @@
 
 {% block extra_css %}
 <style>
-    .detail-header {
-        margin-bottom: 2rem;
-        animation: detail-head-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    body { background: #eef2f7; }
+    .crumbs { margin: 0 0 1rem; font-size: 0.9rem; color: #6b7c8d; }
+    .crumbs a { color: var(--su-orange-dark); font-weight: 600; text-decoration: none; }
+    .crumbs a:hover { text-decoration: underline; }
+
+    /* ---------- Cover header ---------- */
+    .detail-hero {
+        position: relative; overflow: hidden; border-radius: 22px; margin: 0 0 2rem; min-height: 260px;
+        display: flex; align-items: flex-end; background: var(--su-navy); color: #fff;
+        box-shadow: 0 30px 70px -36px rgba(6, 20, 36, 0.8);
+        animation: detail-in 0.5s var(--ease-out) backwards;
     }
-    @keyframes detail-head-in {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+    .detail-hero img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .detail-hero::after {
+        content: ""; position: absolute; inset: 0;
+        background: linear-gradient(180deg, rgba(13, 45, 76, 0.15) 0%, rgba(13, 45, 76, 0.55) 45%, rgba(8, 26, 46, 0.94) 100%);
     }
+    .detail-hero-body { position: relative; z-index: 1; padding: clamp(1.4rem, 4vw, 2.4rem); display: grid; gap: 0.8rem; }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .hero-pill {
+        display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.7rem; border-radius: 999px;
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.02em; text-decoration: none;
+    }
+    .hero-pill svg { width: 0.95rem; height: 0.95rem; }
+    .hero-pill--cat { background: var(--su-orange); color: #fff; }
+    .hero-pill--time { background: rgba(255, 255, 255, 0.16); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+    .detail-hero h1 { margin: 0; font-family: var(--font-display); font-size: clamp(1.9rem, 5vw, 2.9rem); line-height: 1.1; letter-spacing: -0.025em; max-width: 24ch; }
+    @keyframes detail-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    /* ---------- Two-column layout ---------- */
+    .detail-layout { display: grid; gap: 1.75rem; align-items: start; }
+    @media (min-width: 960px) { .detail-layout { grid-template-columns: minmax(0, 1fr) 320px; gap: 2rem; } }
+    .panel { background: #fff; border-radius: 18px; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card); padding: clamp(1.3rem, 3vw, 1.9rem); }
+    .panel + .panel { margin-top: 1.5rem; }
+    .panel-title {
+        display: flex; align-items: center; gap: 0.55rem; margin: 0 0 1rem;
+        font-family: var(--font-display); font-size: 1.25rem; color: var(--su-navy); letter-spacing: -0.01em;
+    }
+    .panel-title .count { font-family: var(--font-body, inherit); font-size: 0.8rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 999px; background: #eef2f7; color: #55677a; }
+    .about p { margin: 0 0 1rem; font-size: 1.05rem; line-height: 1.75; color: #33465a; max-width: 70ch; }
+    .about p:last-child { margin-bottom: 0; }
+
+    /* Materials */
+    .material-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.75rem; }
+    .material-row {
+        display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.4rem 1rem; align-items: center;
+        padding: 0.9rem 1rem; border-radius: 14px; border: 1px solid rgba(13, 45, 76, 0.1); background: #fafbfd;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        animation: detail-in 0.45s calc(0.1s + var(--mat-i, 0) * 0.06s) var(--ease-out) backwards;
+    }
+    .material-row:hover { border-color: rgba(247, 105, 0, 0.35); box-shadow: 0 12px 26px -20px rgba(13, 45, 76, 0.55); }
+    @media (min-width: 640px) { .material-row { grid-template-columns: auto minmax(0, 1fr) auto; } }
+    .file-tile {
+        width: 3rem; height: 3.4rem; border-radius: 8px; position: relative;
+        display: flex; align-items: flex-end; justify-content: center; padding-bottom: 0.4rem;
+        background: #fff; border: 1px solid rgba(13, 45, 76, 0.14); box-shadow: 0 4px 10px -6px rgba(13, 45, 76, 0.45);
+    }
+    .file-tile::before { content: ""; position: absolute; top: -1px; right: -1px; width: 0.85rem; height: 0.85rem; background: linear-gradient(225deg, #eef2f7 50%, rgba(13, 45, 76, 0.14) 50%); border-top-right-radius: 8px; }
+    .file-tile b { font-size: 0.6rem; font-weight: 800; letter-spacing: 0.04em; color: #fff; padding: 0.12rem 0.3rem; border-radius: 4px; background: #6b7c8d; text-transform: uppercase; }
+    .file-tile--pdf b { background: #e5484d; }
+    .file-tile--doc b, .file-tile--docx b, .file-tile--odt b { background: #2d6fd2; }
+    .file-tile--ppt b, .file-tile--pptx b, .file-tile--odp b { background: #e8590c; }
+    .file-tile--xls b, .file-tile--xlsx b, .file-tile--ods b, .file-tile--csv b { background: #2f9e44; }
+    .file-tile--mp4 b, .file-tile--webm b, .file-tile--ogg b { background: #7048e8; }
+    .file-tile--png b, .file-tile--jpg b, .file-tile--jpeg b, .file-tile--gif b, .file-tile--webp b { background: #0b7285; }
+    .material-info { min-width: 0; }
+    .material-info strong { display: block; font-size: 1rem; color: var(--su-navy); }
+    .material-type { font-size: 0.82rem; color: #6b7c8d; }
+    .material-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; grid-column: 1 / -1; }
+    @media (min-width: 640px) { .material-actions { grid-column: auto; justify-content: flex-end; } }
+    .material-actions .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+    .btn-preview { background: #fff; color: var(--su-navy); border: 1.5px solid rgba(13, 45, 76, 0.18); box-shadow: none; }
+    .btn-preview:hover { border-color: var(--su-orange); color: var(--su-orange-dark); background: #fff; }
+    .btn-preview-off { opacity: 0.55; cursor: not-allowed; }
+    .preview-note { grid-column: 1 / -1; margin: 0.15rem 0 0; font-size: 0.82rem; color: #6b7c8d; }
+
+    /* ---------- At a glance ---------- */
+    @media (min-width: 960px) { .glance { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); } }
+    .facts { list-style: none; margin: 0 0 1.25rem; padding: 0; display: grid; gap: 0.85rem; }
+    .facts li { display: grid; grid-template-columns: 2.4rem 1fr; gap: 0.75rem; align-items: center; }
+    .fact-icon { width: 2.4rem; height: 2.4rem; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(247, 105, 0, 0.12); color: var(--su-orange-dark); }
+    .fact-icon svg { width: 1.2rem; height: 1.2rem; }
+    .facts small { display: block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #8493a3; }
+    .facts span { font-weight: 700; color: var(--su-navy); }
+    .glance h3 { margin: 0 0 0.6rem; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--su-orange-dark); font-family: var(--font-mono); }
+    .glance .tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .signin-callout { margin-top: 1.25rem; padding: 1rem; border-radius: 14px; background: #fff4ea; border: 1px solid rgba(247, 105, 0, 0.25); display: grid; gap: 0.7rem; }
+    .signin-callout p { margin: 0; font-size: 0.9rem; color: #46586b; line-height: 1.5; }
+    .signin-callout .actions { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .signin-callout .btn { padding: 0.5rem 1rem; font-size: 0.9rem; }
+
+    /* ---------- Related ---------- */
+    .related { margin: 3rem 0 0; }
+    .related h2 { margin: 0 0 1rem; font-family: var(--font-display); font-size: 1.35rem; color: var(--su-navy); }
+    .related-grid { display: grid; gap: 1.25rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
+    .act-card { position: relative; display: flex; flex-direction: column; overflow: hidden; background: #fff; border-radius: 18px; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card); transition: transform 0.25s var(--ease-out), box-shadow 0.25s ease; }
+    .act-card:hover { transform: translateY(-4px); box-shadow: 0 26px 56px -28px rgba(13, 45, 76, 0.55); }
+    .act-media { position: relative; aspect-ratio: 16 / 9; overflow: hidden; background: #e3e8ef; }
+    .act-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-pill { position: absolute; left: 0.65rem; top: 0.65rem; padding: 0.25rem 0.6rem; border-radius: 999px; font-size: 0.72rem; font-weight: 700; color: var(--su-navy); background: rgba(255, 255, 255, 0.92); }
+    .card-time { position: absolute; left: 0.65rem; bottom: 0.65rem; display: inline-flex; align-items: center; gap: 0.3rem; padding: 0.25rem 0.55rem; border-radius: 999px; font-size: 0.75rem; font-weight: 700; color: #fff; background: rgba(13, 45, 76, 0.78); }
+    .card-time svg { width: 0.9rem; height: 0.9rem; }
+    .act-body { display: flex; flex-direction: column; gap: 0.5rem; padding: 1rem 1.1rem 1.15rem; flex: 1; }
+    .act-body h3 { margin: 0; font-family: var(--font-display); font-size: 1.08rem; line-height: 1.3; }
+    .act-body h3 a { color: var(--su-navy); text-decoration: none; }
+    .act-body h3 a::after { content: ""; position: absolute; inset: 0; }
+    .act-card:hover h3 a { color: var(--su-orange-dark); }
+    .act-desc { margin: 0; color: #55677a; font-size: 0.92rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
     @media (prefers-reduced-motion: reduce) {
-        .detail-header { animation: none; }
-    }
-    .detail-header h1 {
-        font-family: var(--font-display);
-        font-size: clamp(1.6rem, 3.5vw, 2rem);
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        color: var(--su-navy);
-        margin: 0 0 0.5rem;
-    }
-    .detail-meta {
-        font-size: 0.9rem;
-        color: var(--su-gray-dark);
-    }
-    .detail-meta .category {
-        color: var(--su-orange-dark);
-        font-weight: 700;
-        font-family: var(--font-mono);
-        font-size: 0.78rem;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-    }
-    .detail-content {
-        margin-bottom: 2rem;
-    }
-    .detail-content p {
-        margin: 0 0 1rem;
-    }
-    .detail-tags-wrap {
-        margin-bottom: 2rem;
-    }
-    .detail-tags-wrap .tags {
-        margin-bottom: 0;
-    }
-    .materials-section {
-        background: linear-gradient(180deg, #f4f7fa 0%, #eef3f7 100%);
-        padding: 1.5rem 1.6rem;
-        border-radius: 12px;
-        border: 1px solid rgba(13, 45, 76, 0.08);
-        box-shadow: 0 4px 20px rgba(13, 45, 76, 0.05);
-    }
-    .materials-section h2 {
-        font-size: 1.1rem;
-        color: var(--su-navy);
-        margin: 0 0 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--su-orange);
-    }
-    .material-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .material-card {
-        --mat-i: 0;
-        background: white;
-        border: 1px solid rgba(13, 45, 76, 0.1);
-        border-radius: 10px;
-        margin-bottom: 1.25rem;
-        overflow: hidden;
-        box-shadow: 0 2px 10px rgba(13, 45, 76, 0.04);
-        transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-        animation: mat-enter 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
-        animation-delay: calc(0.1s + var(--mat-i) * 0.06s);
-    }
-    @keyframes mat-enter {
-        from { opacity: 0; transform: translateY(12px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .material-card { animation: none; }
-    }
-    .material-card:hover {
-        border-color: rgba(247, 105, 0, 0.35);
-        box-shadow: 0 8px 28px rgba(13, 45, 76, 0.08);
-        transform: translateY(-2px);
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .material-card:hover { transform: none; }
-    }
-    .material-card:last-child {
-        margin-bottom: 0;
-    }
-    .material-head {
-        display: flex;
-        align-items: flex-start;
-        gap: 0.75rem;
-        padding: 1rem;
-        flex-wrap: wrap;
-    }
-    .material-info {
-        flex: 1;
-        min-width: 0;
-    }
-    .material-info strong {
-        display: block;
-        color: var(--su-navy);
-    }
-    .material-type {
-        font-size: 0.85rem;
-        color: var(--su-gray-dark);
-    }
-    .material-actions {
-        display: flex;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        align-items: center;
-    }
-    .btn-preview {
-        background: linear-gradient(180deg, #fff 0%, #fff5eb 100%);
-        color: var(--su-orange-dark);
-        border: 2px solid var(--su-orange);
-        box-shadow: 0 2px 8px rgba(247, 105, 0, 0.15);
-    }
-    .btn-preview:hover {
-        background: var(--su-orange);
-        color: #fff;
-        border-color: var(--su-orange);
-        box-shadow: 0 4px 16px rgba(247, 105, 0, 0.35);
-    }
-    .btn-preview-off,
-    .btn-preview-off:disabled {
-        opacity: 0.72;
-        cursor: not-allowed;
-        background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%) !important;
-        color: #666 !important;
-        border: 2px dashed #bbb !important;
-        box-shadow: none !important;
-        font: inherit;
-    }
-    .btn-preview-off:hover {
-        background: linear-gradient(180deg, #f5f5f5 0%, #ebebeb 100%) !important;
-        color: #666 !important;
-    }
-    .preview-note {
-        padding: 0.75rem 1rem 1rem;
-        font-size: 0.9rem;
-        color: var(--su-gray-dark);
-        margin: 0;
-        border-top: 1px solid #eee;
-        background: #fafbfc;
-    }
-    .preview-hint-below {
-        font-size: 0.85rem;
-        color: var(--su-gray-dark);
-    }
-    .materials-login-hint {
-        font-size: 0.92rem;
-        color: var(--su-gray-dark);
-        margin: 0 0 1rem;
-        padding: 0.75rem 1rem;
-        background: rgba(247, 105, 0, 0.08);
-        border-radius: 8px;
-        border: 1px solid rgba(247, 105, 0, 0.22);
-    }
-    .back-link {
-        display: inline-block;
-        margin-bottom: 1.5rem;
-        color: var(--su-orange);
-        text-decoration: none;
-        font-weight: 600;
-        transition: transform 0.2s ease, color 0.2s ease;
-    }
-    .back-link:hover {
-        color: var(--su-orange-dark);
-        transform: translateX(-3px);
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .back-link:hover { transform: none; }
+        .detail-hero, .material-row { animation: none; }
+        .act-card:hover { transform: none; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<a href="{% url 'activities:list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}" class="back-link">← Back to activities</a>
+<nav class="crumbs" aria-label="Breadcrumb">
+    <a href="{% url 'activities:list' %}{% if request.GET %}?{{ request.GET.urlencode }}{% endif %}">← Browse activities</a>
+    {% if activity.category %} / <a href="{% url 'activities:list' %}?category={{ activity.category_id }}">{{ activity.category }}</a>{% endif %}
+</nav>
 
-<header class="detail-header">
-    <h1>{{ activity.title }}</h1>
-    {% if activity.category %}
-    <p class="detail-meta"><span class="category">{{ activity.category }}</span></p>
-    {% endif %}
+<header class="detail-hero">
+    <img src="{{ tile_image }}" alt="" width="1200" height="600">
+    <div class="detail-hero-body">
+        <div class="hero-badges">
+            {% if activity.category %}<a class="hero-pill hero-pill--cat" href="{% url 'activities:list' %}?category={{ activity.category_id }}">{{ activity.category }}</a>{% endif %}
+            {% if duration %}<span class="hero-pill hero-pill--time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ duration }}</span>{% endif %}
+        </div>
+        <h1>{{ activity.title }}</h1>
+    </div>
 </header>
 
-{% if activity.tags.all %}
-<div class="detail-tags-wrap">
-    <div class="tags">
-        {% for tag in activity.tags.all %}
-        <a href="{% url 'activities:list' %}?tag={{ tag.name|urlencode }}" class="tag tag-chip" style="--tag-i: {{ forloop.counter0 }}" aria-label="Show activities tagged {{ tag.display_name }}">{{ tag.display_name }}</a>
+<div class="detail-layout">
+    <div class="detail-main">
+        <section class="panel about" aria-labelledby="about-heading">
+            <h2 class="panel-title" id="about-heading">About this activity</h2>
+            {% if description %}{{ description|linebreaks }}{% else %}<p>No description provided.</p>{% endif %}
+        </section>
+
+        {% if materials %}
+        <section class="panel" aria-labelledby="materials-heading">
+            <h2 class="panel-title" id="materials-heading">Materials <span class="count">{{ materials|length }}</span></h2>
+            <ul class="material-list">
+                {% for m in materials %}
+                <li class="material-row" style="--mat-i: {{ forloop.counter0 }}">
+                    <span class="file-tile file-tile--{{ m.file_ext|default:'file' }}" aria-hidden="true"><b>{{ m.file_ext|default:"file" }}</b></span>
+                    <div class="material-info">
+                        <strong>{{ m.title }}</strong>
+                        <span class="material-type">{{ m.material_type }}{% if m.file_ext %} · {{ m.file_ext|upper }}{% endif %}</span>
+                    </div>
+                    {% if m.file_download_url or m.show_preview_button and m.file_open_url or m.preview_kind == "office" and m.file_open_url %}
+                    <div class="material-actions">
+                        {% if m.show_preview_button and m.file_open_url %}
+                            {% if user.is_authenticated %}
+                            <a href="{{ m.file_open_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-preview">Preview</a>
+                            {% else %}
+                            {% url 'activities:material_open' m.id as preview_next %}
+                            <a href="{% url 'accounts:login' %}?next={{ preview_next|urlencode }}" class="btn btn-preview">Preview</a>
+                            {% endif %}
+                        {% elif m.preview_kind == "office" and m.file_open_url %}
+                        <button type="button" class="btn btn-preview btn-preview-off" disabled
+                            title="{% if user.is_staff %}Browser preview needs a PDF. In Admin, edit this material and upload a file under “Preview (PDF)” (export your Word doc as PDF). Download still gives the original Word file.{% else %}Preview isn’t available for this file type — use Download to open it.{% endif %}">
+                            Preview
+                        </button>
+                        {% endif %}
+                        {% if m.file_download_url %}
+                            {% if user.is_authenticated %}
+                            <a href="{{ m.file_download_url }}" class="btn">Download</a>
+                            {% else %}
+                            {% url 'activities:material_download' m.id as download_next %}
+                            <a href="{% url 'accounts:login' %}?next={{ download_next|urlencode }}" class="btn">Download</a>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    {% if m.file_open_url %}
+                        {% if m.show_preview_button and m.has_preview_pdf %}
+                        <p class="preview-note">Preview opens a PDF in a new tab; Download gets the editable file.</p>
+                        {% elif m.preview_kind == "office" %}
+                        <p class="preview-note">Office files can’t be previewed in the browser. Use Download{% if not user.is_authenticated %} after signing in{% endif %}.{% if user.is_staff %} To enable preview, add a <strong>Preview (PDF)</strong> in admin.{% endif %}</p>
+                        {% elif not m.show_preview_button %}
+                        <p class="preview-note">Use Download for this file type.</p>
+                        {% endif %}
+                    {% endif %}
+                </li>
+                {% endfor %}
+            </ul>
+        </section>
+        {% endif %}
+    </div>
+
+    <aside class="panel glance" aria-labelledby="glance-heading">
+        <h2 class="panel-title" id="glance-heading">At a glance</h2>
+        <ul class="facts">
+            {% if duration %}
+            <li><span class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><small>Time</small><span>{{ duration }}</span></div></li>
+            {% endif %}
+            {% if activity.category %}
+            <li><span class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><div><small>Category</small><span>{{ activity.category }}</span></div></li>
+            {% endif %}
+            <li><span class="fact-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg></span><div><small>Materials</small><span>{{ materials|length }} file{{ materials|length|pluralize }}</span></div></li>
+        </ul>
+        {% if activity.tags.all %}
+        <h3>Tags</h3>
+        <div class="tags">
+            {% for tag in activity.tags.all %}
+            <a href="{% url 'activities:list' %}?tag={{ tag.name|urlencode }}" class="tag tag-chip" style="--tag-i: {{ forloop.counter0 }}" aria-label="Show activities tagged {{ tag.display_name }}">{{ tag.display_name }}</a>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if materials and not user.is_authenticated %}
+        <div class="signin-callout">
+            <p>Sign in with your <strong>.edu</strong> account to preview and download the materials.</p>
+            <div class="actions">
+                <a class="btn" href="{% url 'accounts:login' %}?next={{ request.path|urlencode }}">Log in</a>
+                <a class="btn btn-outline" href="{% url 'accounts:register' %}">Register</a>
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+</div>
+
+{% if related_activities %}
+<section class="related" aria-labelledby="related-heading">
+    <h2 id="related-heading">You might also like</h2>
+    <div class="related-grid">
+        {% for row in related_activities %}
+        <article class="act-card">
+            <div class="act-media">
+                <img src="{{ row.tile_image }}" alt="" loading="lazy" width="800" height="450">
+                {% if row.activity.category %}<span class="card-pill">{{ row.activity.category }}</span>{% endif %}
+                {% if row.duration %}<span class="card-time"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>{{ row.duration }}</span>{% endif %}
+            </div>
+            <div class="act-body">
+                <h3><a href="{% url 'activities:detail' row.activity.slug %}">{{ row.activity.title }}</a></h3>
+                {% if row.description %}<p class="act-desc">{{ row.description }}</p>{% endif %}
+            </div>
+        </article>
         {% endfor %}
     </div>
-</div>
-{% endif %}
-
-<div class="detail-content">
-    {% if activity.description %}
-    {{ activity.description|linebreaks }}
-    {% else %}
-    <p>No description provided.</p>
-    {% endif %}
-</div>
-
-{% if materials %}
-<section class="materials-section">
-    <h2>Materials</h2>
-    {% if not user.is_authenticated %}
-    <p class="materials-login-hint">Sign in with your <strong>.edu</strong> account to open previews in a new tab and download files. Use <strong>Preview</strong> and <strong>Download</strong> below.</p>
-    {% endif %}
-    <ul class="material-list">
-        {% for m in materials %}
-        <li class="material-card" style="--mat-i: {{ forloop.counter0 }}">
-            <div class="material-head">
-                <div class="material-info">
-                    <strong>{{ m.title }}</strong>
-                    <span class="material-type">{{ m.material_type }}</span>
-                </div>
-                {% if m.file_download_url or m.show_preview_button and m.file_open_url or m.preview_kind == "office" and m.file_open_url %}
-                <div class="material-actions">
-                    {% if m.show_preview_button and m.file_open_url %}
-                        {% if user.is_authenticated %}
-                        <a href="{{ m.file_open_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-preview">Preview</a>
-                        {% else %}
-                        {% url 'activities:material_open' m.id as preview_next %}
-                        <a href="{% url 'accounts:login' %}?next={{ preview_next|urlencode }}" class="btn btn-preview">Preview</a>
-                        {% endif %}
-                    {% elif m.preview_kind == "office" and m.file_open_url %}
-                    <button type="button" class="btn btn-preview btn-preview-off" disabled
-                        title="{% if user.is_staff %}Browser preview needs a PDF. In Admin, edit this material and upload a file under “Preview (PDF)” (export your Word doc as PDF). Download still gives the original Word file.{% else %}Preview isn’t available for this file type — use Download to open it.{% endif %}">
-                        Preview
-                    </button>
-                    {% endif %}
-                    {% if m.file_download_url %}
-                        {% if user.is_authenticated %}
-                        <a href="{{ m.file_download_url }}" class="btn">Download</a>
-                        {% else %}
-                        {% url 'activities:material_download' m.id as download_next %}
-                        <a href="{% url 'accounts:login' %}?next={{ download_next|urlencode }}" class="btn">Download</a>
-                        {% endif %}
-                    {% endif %}
-                </div>
-                {% endif %}
-            </div>
-            {% if m.file_open_url %}
-                {% if m.show_preview_button and m.has_preview_pdf %}
-                    {% if user.is_authenticated %}
-                    <p class="preview-note preview-hint-below">Press <strong>Preview</strong> to open the PDF in a new tab. <strong>Download</strong> is the main (e.g. Word) file.</p>
-                    {% else %}
-                    <p class="preview-note preview-hint-below">Use <strong>Preview</strong> for the PDF in a new tab. <strong>Download</strong> gets the main (e.g. Word) file.</p>
-                    {% endif %}
-                {% elif m.show_preview_button %}
-                    {% if user.is_authenticated %}
-                    <p class="preview-note preview-hint-below">Press <strong>Preview</strong> to open in a new tab.</p>
-                    {% else %}
-                    <p class="preview-note preview-hint-below">Use <strong>Preview</strong> to open in a new tab.</p>
-                    {% endif %}
-                {% elif m.preview_kind == "office" %}
-                <p class="preview-note">
-                    Word, Excel, and PowerPoint can’t be previewed in the browser here. Use <strong>Download</strong>{% if not user.is_authenticated %} after signing in{% endif %} to open this file.{% if user.is_staff %} To enable preview, add a <strong>Preview (PDF)</strong> in admin.{% endif %}
-                </p>
-                {% else %}
-                <p class="preview-note">Use <strong>Download</strong> for this file type.</p>
-                {% endif %}
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
 </section>
 {% endif %}
 {% endblock %}
