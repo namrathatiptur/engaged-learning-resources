@@ -49,3 +49,12 @@ def get_item(mapping, key):
         return mapping.get(str(key), "")
     except AttributeError:
         return ""
+
+
+@register.filter
+def in_set(value, collection):
+    """True if value is in collection (e.g. tag name in the set of selected tags)."""
+    try:
+        return value in collection
+    except TypeError:
+        return False

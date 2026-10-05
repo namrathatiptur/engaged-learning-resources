@@ -22,52 +22,58 @@
     .auth-note { margin: 0; font-size: 0.92rem; color: #55677a; }
     .auth-note a { color: var(--su-orange-dark); font-weight: 600; }
 
-    /* ---------- Layout: sidebar + results ---------- */
-    .browse { display: grid; gap: 1.75rem; align-items: start; }
-    @media (min-width: 900px) { .browse { grid-template-columns: 250px minmax(0, 1fr); gap: 2rem; } }
-    .filters-toggle { display: none; }
-    .browse-side { display: grid; gap: 1.5rem; }
-    @media (min-width: 900px) { .browse-side { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); max-height: calc(100vh - var(--header-h, 61px) - 2.5rem); overflow: auto; padding-right: 0.25rem; } }
-    @media (max-width: 899px) {
-        .js-filters .filters-toggle {
-            display: inline-flex; align-items: center; gap: 0.5rem; justify-self: start;
-            padding: 0.55rem 1rem; border-radius: 999px; border: 1.5px solid rgba(13, 45, 76, 0.16); background: #fff;
-            font: inherit; font-weight: 700; color: var(--su-navy); cursor: pointer;
-        }
-        .filters-toggle svg { width: 1.1rem; height: 1.1rem; }
-        .filters-toggle .count { min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 999px; background: var(--su-orange); color: #fff; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; }
-        .js-filters .browse-side { display: none; padding: 1.1rem; border-radius: 16px; background: #fff; border: 1px solid rgba(13, 45, 76, 0.08); box-shadow: var(--shadow-card); }
-        .js-filters.filters-open .browse-side { display: grid; }
+    /* ---------- Layout: sticky sidebar (multi-select dropdowns) + results ---------- */
+    .browse { display: grid; gap: 1.5rem; align-items: start; }
+    @media (min-width: 900px) {
+        .browse { grid-template-columns: 260px minmax(0, 1fr); gap: 2rem; }
+        .browse-side { position: sticky; top: calc(var(--header-h, 61px) + 1.25rem); max-height: calc(100vh - var(--header-h, 61px) - 2.5rem); overflow: auto; }
     }
-    .side-group h2 {
-        margin: 0 0 0.6rem; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700;
-        letter-spacing: 0.14em; text-transform: uppercase; color: var(--su-orange-dark);
-    }
-    .cat-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
-    .cat-list a {
-        display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
-        padding: 0.5rem 0.7rem; border-radius: 10px; text-decoration: none; color: var(--su-navy); font-weight: 600; font-size: 0.95rem;
-        transition: background 0.15s ease, color 0.15s ease;
-    }
-    .cat-list a:hover { background: rgba(13, 45, 76, 0.06); }
-    .cat-list a[aria-current="true"] { background: var(--su-navy); color: #fff; }
-    .cat-list .n { font-size: 0.78rem; font-weight: 700; min-width: 1.6rem; text-align: center; padding: 0.1rem 0.4rem; border-radius: 999px; background: rgba(13, 45, 76, 0.07); color: #55677a; }
-    .cat-list a[aria-current="true"] .n { background: rgba(255, 255, 255, 0.18); color: #fff; }
-    .side-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-    .side-tags .tag-chip .n { margin-left: 0.35rem; font-size: 0.72rem; opacity: 0.6; }
-    .side-tags .tag.tag-chip:nth-child(n) { rotate: 0deg; }  /* no sticker tilt in the filter list */
-
-    /* ---------- Results header ---------- */
+    .side-form { display: grid; gap: 0.6rem; }
+    .side-title { margin: 0 0 0.2rem; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--su-orange-dark); }
     .results-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; margin: 0 0 1rem; }
     .results-count { margin: 0; font-weight: 700; color: var(--su-navy); }
-    .sort-form { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem; color: #55677a; }
-    .sort-form select {
+    .sort-form { display: flex; align-items: center; gap: 0.5rem; }
+    .sort-label { font-size: 0.9rem; color: #55677a; }
+    #sort {
         font: inherit; font-weight: 600; color: var(--su-navy); cursor: pointer;
-        padding: 0.45rem 2.4rem 0.45rem 0.85rem; border-radius: 10px; border: 1.5px solid rgba(13, 45, 76, 0.14);
+        padding: 0.5rem 2.4rem 0.5rem 0.85rem; border-radius: 10px; border: 1.5px solid rgba(13, 45, 76, 0.14);
         appearance: none; -webkit-appearance: none;
         background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230D2D4C' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 0.75rem center / 1rem;
     }
-    .sort-form select:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18); }
+    #sort:focus { outline: none; border-color: var(--su-orange); box-shadow: 0 0 0 3px rgba(247, 105, 0, 0.18); }
+    .ms { position: relative; }
+    .ms > summary {
+        list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none;
+        padding: 0.5rem 0.85rem; border-radius: 10px; border: 1.5px solid rgba(13, 45, 76, 0.14); background: #fff;
+        font-weight: 600; color: var(--su-navy);
+    }
+    .ms > summary::-webkit-details-marker { display: none; }
+    .ms > summary:focus-visible { outline: 2px solid var(--su-orange); outline-offset: 2px; }
+    .ms[open] > summary, .ms > summary:hover { border-color: var(--su-orange); }
+    .ms-chev { width: 1rem; height: 1rem; transition: transform 0.2s ease; }
+    .ms[open] .ms-chev { transform: rotate(180deg); }
+    .ms-count { min-width: 1.35rem; height: 1.35rem; padding: 0 0.35rem; border-radius: 999px; background: var(--su-orange); color: #fff; font-size: 0.75rem; display: inline-flex; align-items: center; justify-content: center; }
+    .ms > summary .ms-count { margin-left: auto; }
+    .ms-panel {
+        margin-top: 6px; background: #fff; border-radius: 12px; border: 1px solid rgba(13, 45, 76, 0.12);
+        box-shadow: 0 14px 30px -22px rgba(13, 45, 76, 0.5); padding: 0.6rem;
+    }
+    .ms-filter {
+        width: 100%; margin: 0 0 0.4rem; padding: 0.5rem 0.7rem; border-radius: 9px; border: 1.5px solid rgba(13, 45, 76, 0.14); font: inherit; font-size: 0.92rem;
+    }
+    .ms-filter:focus { outline: none; border-color: var(--su-orange); }
+    .ms-options { max-height: 280px; overflow: auto; display: grid; gap: 1px; }
+    .ms-opt { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 0.6rem; padding: 0.45rem 0.55rem; border-radius: 8px; cursor: pointer; font-size: 0.93rem; color: var(--su-navy); }
+    .ms-opt:hover { background: #f3f6f9; }
+    .ms-opt input { width: 1.05rem; height: 1.05rem; accent-color: var(--su-orange); margin: 0; }
+    .ms-opt .n { font-size: 0.75rem; font-weight: 700; color: #6b7c8d; background: #eef2f7; border-radius: 999px; padding: 0.05rem 0.45rem; }
+    .ms-opt[hidden] { display: none; }
+    .ms-empty { margin: 0.4rem 0.55rem; font-size: 0.88rem; color: #6b7c8d; }
+    .ms-foot { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #eef2f7; }
+    .ms-clear { background: none; border: 0; font: inherit; font-weight: 600; color: #55677a; cursor: pointer; padding: 0.4rem 0.5rem; }
+    .ms-clear:hover { color: var(--su-orange-dark); }
+    .ms-foot .btn { padding: 0.45rem 1rem; font-size: 0.9rem; }
+
     .active-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 0.45rem; margin: 0 0 1.1rem; }
     .active-chip {
         display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.3rem 0.45rem 0.3rem 0.75rem; border-radius: 999px;
@@ -179,8 +185,8 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
         <label for="q" class="sr-only">Search activities</label>
         <input type="search" name="q" id="q" value="{{ request.GET.q }}" placeholder="Search activities…" autocomplete="off" enterkeyhint="search">
-        {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
-        {% if request.GET.tag %}<input type="hidden" name="tag" value="{{ request.GET.tag }}">{% endif %}
+        {% for c in category_selected %}<input type="hidden" name="category" value="{{ c.id }}">{% endfor %}
+        {% for t in tag_selected %}<input type="hidden" name="tag" value="{{ t.name }}">{% endfor %}
         {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
         <button type="submit" class="btn">Search</button>
     </form>
@@ -190,60 +196,74 @@
 </div>
 
 <div class="browse">
-    <button type="button" class="filters-toggle" aria-expanded="false" aria-controls="browse-side">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
-        Filters
-        {% if active_category or active_filtered_tag %}<span class="count">{% if active_category and active_filtered_tag %}2{% else %}1{% endif %}</span>{% endif %}
-    </button>
+<aside class="browse-side" aria-label="Filters">
+    <form method="get" class="side-form" id="filter-form">
+        {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+        {% if request.GET.sort %}<input type="hidden" name="sort" value="{{ request.GET.sort }}">{% endif %}
+        <h2 class="side-title">Filters</h2>
+            <details class="ms" data-ms>
+                <summary>Category{% if category_selected %}<span class="ms-count">{{ category_selected|length }}</span>{% endif %}<svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+                <div class="ms-panel">
+                    {% if category_facets|length > 8 %}<input type="search" class="ms-filter" placeholder="Filter categories…" aria-label="Filter categories…" autocomplete="off">{% endif %}
+                    <div class="ms-options">
+                        {% for f in category_facets %}
+                        <label class="ms-opt"><input type="checkbox" name="category" value="{{ f.id }}"{% if f.active %} checked{% endif %}><span class="ms-label">{{ f.name }}</span><span class="n">{{ f.count }}</span></label>
+                        {% empty %}
+                        <p class="ms-empty">Nothing to filter yet.</p>
+                        {% endfor %}
+                        <p class="ms-empty ms-nomatch" hidden>No matches.</p>
+                    </div>
+                    <div class="ms-foot">
+                        <button type="button" class="ms-clear">Clear</button>
+                        <button type="submit" class="btn">Apply</button>
+                    </div>
+                </div>
+            </details>
+            <details class="ms" data-ms>
+                <summary>Tags{% if tag_selected %}<span class="ms-count">{{ tag_selected|length }}</span>{% endif %}<svg class="ms-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+                <div class="ms-panel">
+                    {% if tag_facets|length > 8 %}<input type="search" class="ms-filter" placeholder="Filter tags…" aria-label="Filter tags…" autocomplete="off">{% endif %}
+                    <div class="ms-options">
+                        {% for f in tag_facets %}
+                        <label class="ms-opt"><input type="checkbox" name="tag" value="{{ f.name }}"{% if f.active %} checked{% endif %}><span class="ms-label">{{ f.display_name }}</span><span class="n">{{ f.count }}</span></label>
+                        {% empty %}
+                        <p class="ms-empty">Nothing to filter yet.</p>
+                        {% endfor %}
+                        <p class="ms-empty ms-nomatch" hidden>No matches.</p>
+                    </div>
+                    <div class="ms-foot">
+                        <button type="button" class="ms-clear">Clear</button>
+                        <button type="submit" class="btn">Apply</button>
+                    </div>
+                </div>
+            </details>
+    </form>
+</aside>
 
-    <aside class="browse-side" id="browse-side" aria-label="Filters">
-        <section class="side-group">
-            <h2>Category</h2>
-            <ul class="cat-list">
-                <li><a href="{{ category_all_url }}" {% if not active_category %}aria-current="true"{% endif %}>All categories <span class="n">{{ category_all_count }}</span></a></li>
-                {% for c in category_facets %}{% if c.count or c.active %}
-                <li><a href="{{ c.url }}" {% if c.active %}aria-current="true"{% endif %}>{{ c.name }} <span class="n">{{ c.count }}</span></a></li>
-                {% endif %}{% endfor %}
-            </ul>
-        </section>
-        {% if tag_facets %}
-        <section class="side-group">
-            <h2>Tags</h2>
-            <div class="side-tags">
-                {% for t in tag_facets %}
-                <a href="{{ t.url }}" class="tag tag-chip{% if t.active %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}" {% if t.active %}aria-current="true" aria-label="Remove tag filter {{ t.display_name }}"{% endif %}>{{ t.display_name }}<span class="n">{{ t.count }}</span>{% if t.active %} <span class="tag-chip-remove" aria-hidden="true">&times;</span>{% endif %}</a>
-                {% endfor %}
-            </div>
-        </section>
-        {% endif %}
-    </aside>
+<section class="browse-results" aria-label="Results">
+    <div class="results-bar">
+        <p class="results-count" role="status">{{ total }} activit{{ total|pluralize:"y,ies" }}</p>
+        <form method="get" class="sort-form">
+            {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
+            {% for c in category_selected %}<input type="hidden" name="category" value="{{ c.id }}">{% endfor %}
+            {% for t in tag_selected %}<input type="hidden" name="tag" value="{{ t.name }}">{% endfor %}
+            <label for="sort" class="sort-label">Sort</label>
+            <select name="sort" id="sort">
+                <option value="-created_at" {% if request.GET.sort == "-created_at" or not request.GET.sort %}selected{% endif %}>Newest first</option>
+                <option value="created_at" {% if request.GET.sort == "created_at" %}selected{% endif %}>Oldest first</option>
+                <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Title A–Z</option>
+                <option value="-title" {% if request.GET.sort == "-title" %}selected{% endif %}>Title Z–A</option>
+            </select>
+            <noscript><button type="submit" class="btn btn-outline">Apply</button></noscript>
+        </form>
+    </div>
 
-    <section class="browse-results" aria-label="Results">
-        <div class="results-bar">
-            <p class="results-count" role="status">{{ total }} activit{{ total|pluralize:"y,ies" }}</p>
-            <form method="get" class="sort-form">
-                {% if request.GET.q %}<input type="hidden" name="q" value="{{ request.GET.q }}">{% endif %}
-                {% if request.GET.category %}<input type="hidden" name="category" value="{{ request.GET.category }}">{% endif %}
-                {% if request.GET.tag %}<input type="hidden" name="tag" value="{{ request.GET.tag }}">{% endif %}
-                <label for="sort">Sort</label>
-                <select name="sort" id="sort">
-                    <option value="-created_at" {% if request.GET.sort == "-created_at" or not request.GET.sort %}selected{% endif %}>Newest first</option>
-                    <option value="created_at" {% if request.GET.sort == "created_at" %}selected{% endif %}>Oldest first</option>
-                    <option value="title" {% if request.GET.sort == "title" %}selected{% endif %}>Title A–Z</option>
-                    <option value="-title" {% if request.GET.sort == "-title" %}selected{% endif %}>Title Z–A</option>
-                </select>
-                <noscript><button type="submit" class="btn btn-outline">Apply</button></noscript>
-            </form>
-        </div>
-
-        {% if request.GET.q or active_category or active_filtered_tag %}
-        <div class="active-filters">
-            {% if request.GET.q %}<a class="active-chip" href="{{ remove_q_url }}" aria-label="Remove search {{ request.GET.q }}">“{{ request.GET.q }}” <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
-            {% if active_category %}<a class="active-chip" href="{{ remove_category_url }}" aria-label="Remove category filter {{ active_category.name }}">{{ active_category.name }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
-            {% if active_filtered_tag %}<a class="active-chip" href="{{ clear_tag_url }}" aria-label="Remove tag filter {{ active_filtered_tag.display_name }}">{{ active_filtered_tag.display_name }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endif %}
-            <a class="clear-all" href="{% url 'activities:list' %}">Clear all</a>
-        </div>
-        {% endif %}
+    {% if active_chips %}
+    <div class="active-filters">
+        {% for chip in active_chips %}<a class="active-chip" href="{{ chip.url }}" aria-label="Remove {{ chip.kind }} filter {{ chip.label }}">{{ chip.label }} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></a>{% endfor %}
+        <a class="clear-all" href="{% url 'activities:list' %}">Clear all</a>
+    </div>
+    {% endif %}
 
         {% if activity_rows %}
         <div class="activity-grid">
@@ -270,7 +290,7 @@
                     {% if row.tags_shown %}
                     <div class="act-tags">
                         {% for tag in row.tags_shown %}
-                        <a href="{% if active_tag_name and tag.name|lower == active_tag_name %}{{ clear_tag_url }}{% else %}{% url 'activities:list' %}?{{ tag_apply_queries|get_item:tag.name }}{% endif %}" class="tag tag-chip{% if active_tag_name and tag.name|lower == active_tag_name %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}" {% if active_tag_name and tag.name|lower == active_tag_name %}aria-label="Remove tag filter {{ tag.display_name }}"{% else %}aria-label="Show activities tagged {{ tag.display_name }}"{% endif %}>{{ tag.display_name }}</a>
+                        {% with is_on=tag.name|lower|in_set:active_tag_names %}<a href="{{ tag_urls|get_item:tag.name }}" class="tag tag-chip{% if is_on %} tag-chip--filter-active{% endif %}" style="--tag-i: {{ forloop.counter0 }}" aria-label="{% if is_on %}Remove tag filter{% else %}Filter by tag{% endif %} {{ tag.display_name }}">{{ tag.display_name }}</a>{% endwith %}
                         {% endfor %}
                         {% if row.tags_more %}<span class="tag-more">+{{ row.tags_more }}</span>{% endif %}
                     </div>
@@ -300,7 +320,7 @@
             <a href="{% url 'activities:list' %}" class="btn btn-outline">Clear all filters</a>
         </div>
         {% endif %}
-    </section>
+</section>
 </div>
 
 <div class="lightbox" id="activity-lightbox" hidden>
@@ -399,17 +419,35 @@
         });
     })();
 
-    // Browse filters: auto-apply sort, and the phone "Filters" toggle for the sidebar.
+    // Browse filters: auto-apply sort; sidebar multi-select dropdowns (filter box, clear, Esc closes).
     (function () {
         var sort = document.getElementById('sort');
         if (sort) sort.addEventListener('change', function () { sort.form.submit(); });
-        var layout = document.querySelector('.browse');
-        var toggle = document.querySelector('.filters-toggle');
-        if (!layout || !toggle) return;
-        layout.classList.add('js-filters');
-        toggle.addEventListener('click', function () {
-            var open = layout.classList.toggle('filters-open');
-            toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var menus = Array.prototype.slice.call(document.querySelectorAll('[data-ms]'));
+        menus.forEach(function (menu) {
+            menu.addEventListener('toggle', function () {
+                var box = menu.querySelector('.ms-filter');
+                if (menu.open && box) box.focus();
+            });
+            var box = menu.querySelector('.ms-filter');
+            if (box) {
+                box.addEventListener('input', function () {
+                    var q = box.value.trim().toLowerCase(), shown = 0;
+                    menu.querySelectorAll('.ms-opt').forEach(function (opt) {
+                        var hit = opt.querySelector('.ms-label').textContent.toLowerCase().indexOf(q) !== -1;
+                        opt.hidden = !hit; if (hit) shown++;
+                    });
+                    menu.querySelector('.ms-nomatch').hidden = shown !== 0;
+                });
+                box.addEventListener('keydown', function (e) { if (e.key === 'Enter') e.preventDefault(); });
+            }
+            menu.querySelector('.ms-clear').addEventListener('click', function () {
+                menu.querySelectorAll('input[type="checkbox"]').forEach(function (c) { c.checked = false; });
+            });
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') return;
+            menus.forEach(function (menu) { if (menu.open) { menu.open = false; menu.querySelector('summary').focus(); } });
         });
     })();
 </script>

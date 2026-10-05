@@ -274,6 +274,17 @@ def consulting(request):
     return render(request, "consulting.html")
 
 
+def _selected(request, key):
+    """Non-empty, de-duplicated values of a repeatable query param (e.g. ?tag=a&tag=b)."""
+    seen, out = set(), []
+    for value in request.GET.getlist(key):
+        value = value.strip()
+        if value and value.lower() not in seen:
+            seen.add(value.lower())
+            out.append(value)
+    return out
+
+
 def _get_filtered_queryset(request, ignore=()):
     """Build filtered activity queryset from request params (skip any names in `ignore`)."""
     qs = Activity.objects.select_related("category").prefetch_related("tags", "materials")
@@ -286,16 +297,21 @@ def _get_filtered_queryset(request, ignore=()):
             | Q(tags__name__icontains=q)
         ).distinct()
 
-    tag_name = "" if "tag" in ignore else request.GET.get("tag", "").strip()
-    if tag_name:
-        qs = qs.filter(tags__name__iexact=tag_name)
+    # Several ?tag= / ?category= values match activities with ANY of them.
+    tag_names = [] if "tag" in ignore else _selected(request, "tag")
+    if tag_names:
+        tag_q = Q()
+        for name in tag_names:
+            tag_q |= Q(tags__name__iexact=name)
+        qs = qs.filter(tag_q).distinct()
 
-    category_id = "" if "category" in ignore else request.GET.get("category", "").strip()
-    if category_id:
+    if "category" not in ignore:
         try:
-            qs = qs.filter(category_id=int(category_id))
+            category_ids = [int(c) for c in _selected(request, "category")]
         except ValueError:
             return None, "Invalid category id."
+        if category_ids:
+            qs = qs.filter(category_id__in=category_ids)
 
     sort = request.GET.get("sort", "-created_at").strip()
     if sort in SORT_FIELDS:
@@ -330,6 +346,18 @@ def _query_without(request, *drop, **set_values):
     return f"{reverse('activities:list')}?{query}" if query else reverse("activities:list")
 
 
+def _query_toggle(request, key, value, *, on):
+    """Current list URL with one value of a repeatable param added (on=True) or removed."""
+    params = request.GET.copy()
+    params.pop("page", None)
+    values = [v for v in params.getlist(key) if v.strip() and v.strip().lower() != str(value).lower()]
+    if on:
+        values.append(str(value))
+    params.setlist(key, values)
+    query = params.urlencode()
+    return f"{reverse('activities:list')}?{query}" if query else reverse("activities:list")
+
+
 def _browse_facets(request):
     """Sidebar counts: categories (respecting search + tag) and tags (respecting search + category)."""
     cat_qs, _ = _get_filtered_queryset(request, ignore=("category",))
@@ -337,16 +365,11 @@ def _browse_facets(request):
     counts = dict(
         Activity.objects.filter(id__in=cat_ids).order_by().values_list("category_id").annotate(n=Count("id"))
     )
-    active_cat = request.GET.get("category", "").strip()
+    active_cats = set(_selected(request, "category"))
     categories = [
-        {
-            "id": c.id,
-            "name": c.name,
-            "count": counts.get(c.id, 0),
-            "active": active_cat == str(c.id),
-            "url": _query_without(request, "category") if active_cat == str(c.id) else _query_without(request, category=c.id),
-        }
+        {"id": c.id, "name": c.name, "count": counts.get(c.id, 0), "active": str(c.id) in active_cats}
         for c in Category.objects.order_by("name")
+        if counts.get(c.id) or str(c.id) in active_cats
     ]
     tag_qs, _ = _get_filtered_queryset(request, ignore=("tag",))
     tag_counts = dict(
@@ -355,23 +378,17 @@ def _browse_facets(request):
         .values_list("tag_id")
         .annotate(n=Count("activity_id", distinct=True))
     )
-    active_tag = request.GET.get("tag", "").strip().lower()
+    active_tags = {t.lower() for t in _selected(request, "tag")}
     tags = [
-        {
-            "name": t.name,
-            "display_name": t.display_name,
-            "count": tag_counts.get(t.id, 0),
-            "active": t.name.lower() == active_tag,
-            "url": _query_without(request, "tag") if t.name.lower() == active_tag else _query_without(request, tag=t.name),
-        }
+        {"name": t.name, "display_name": t.display_name, "count": tag_counts.get(t.id, 0), "active": t.name.lower() in active_tags}
         for t in Tag.objects.order_by("name")
-        if tag_counts.get(t.id) or t.name.lower() == active_tag
+        if tag_counts.get(t.id) or t.name.lower() in active_tags
     ]
     return {
         "category_facets": categories,
-        "category_all_count": len(set(cat_ids.values_list("id", flat=True))),
-        "category_all_url": _query_without(request, "category"),
+        "category_selected": [c for c in categories if c["active"]],
         "tag_facets": tags,
+        "tag_selected": [t for t in tags if t["active"]],
     }
 
 
@@ -413,45 +430,25 @@ def activity_list(request):
 
     # HTML response
     if "text/html" in request.META.get("HTTP_ACCEPT", ""):
-        tags_qs = Tag.objects.order_by("name")
-        tags = list(tags_qs)
-        tag_param = request.GET.get("tag", "").strip()
+        tags = list(Tag.objects.order_by("name"))
         categories = list(Category.objects.order_by("name").values("id", "name", "description"))
-        pagination_params = {k: v for k, v in request.GET.items() if k != "page"}
-        pagination_base = urlencode(pagination_params) if pagination_params else ""
-        # Query string without tag/page (preserve q, category, sort) — for clearing tag chips + banner link
-        get_no_tag_no_page = request.GET.copy()
-        get_no_tag_no_page.pop("page", None)
-        get_no_tag_no_page.pop("tag", None)
-        clear_tag_query = get_no_tag_no_page.urlencode()
-        list_reverse = reverse("activities:list")
-        if clear_tag_query:
-            clear_tag_url = f"{list_reverse}?{clear_tag_query}"
-        else:
-            clear_tag_url = list_reverse
-        active_tag_name = tag_param.lower() if tag_param else ""
-        # Preserve other filters when clicking a tag on a card (reset page when tag changes)
-        tag_apply_queries = {}
-        for tag in tags:
-            gb = request.GET.copy()
-            gb.pop("page", None)
-            gb["tag"] = tag.name
-            tag_apply_queries[tag.name] = gb.urlencode()
-        active_filtered_tag = None
-        if tag_param:
-            for tag in tags:
-                if tag.name.lower() == tag_param.lower():
-                    active_filtered_tag = tag
-                    break
-        has_active_filters = bool(
-            request.GET.get("q", "").strip()
-            or request.GET.get("category", "").strip()
-            or request.GET.get("tag", "").strip()
-            or (
-                request.GET.get("sort", "").strip()
-                and request.GET.get("sort") != "-created_at"
-            )
-        )
+        page_params = request.GET.copy()
+        page_params.pop("page", None)
+        pagination_base = page_params.urlencode()
+        active_tag_names = {t.lower() for t in _selected(request, "tag")}
+        # Card tag chips toggle that tag in the filter (other filters are kept, page resets).
+        tag_urls = {
+            t.name: _query_toggle(request, "tag", t.name, on=t.name.lower() not in active_tag_names) for t in tags
+        }
+        facets = _browse_facets(request)
+        q = request.GET.get("q", "").strip()
+        active_chips = []
+        if q:
+            active_chips.append({"label": f"“{q}”", "url": _query_without(request, "q"), "kind": "search"})
+        for c in facets["category_selected"]:
+            active_chips.append({"label": c["name"], "url": _query_toggle(request, "category", c["id"], on=False), "kind": "category"})
+        for t in facets["tag_selected"]:
+            active_chips.append({"label": t["display_name"], "url": _query_toggle(request, "tag", t["name"], on=False), "kind": "tag"})
         activity_rows = []
         for a in page_obj.object_list:
             body, duration = _split_duration(a.description)
@@ -467,9 +464,6 @@ def activity_list(request):
                     "tags_more": max(0, len(tags_list) - 3),
                 }
             )
-        active_category = next(
-            (c for c in categories if str(c["id"]) == request.GET.get("category", "").strip()), None
-        )
         return render(
             request,
             "activities/activity_list.html",
@@ -478,17 +472,11 @@ def activity_list(request):
                 "page_obj": page_obj,
                 "total": paginator.count,
                 "tags": tags,
-                "tag_apply_queries": tag_apply_queries,
-                "clear_tag_query": clear_tag_query,
-                "clear_tag_url": clear_tag_url,
-                "active_tag_name": active_tag_name,
-                "active_filtered_tag": active_filtered_tag,
-                "has_active_filters": has_active_filters,
+                "tag_urls": tag_urls,
+                "active_tag_names": active_tag_names,
+                "active_chips": active_chips,
                 "categories": categories,
-                "active_category": active_category,
-                "remove_q_url": _query_without(request, "q"),
-                "remove_category_url": _query_without(request, "category"),
-                **_browse_facets(request),
+                **facets,
                 "pagination_base": pagination_base,
             },
         )
